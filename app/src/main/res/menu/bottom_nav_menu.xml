@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_cooling_down"
+        android:icon="@android:drawable/ic_menu_recent_history"
+        android:title="Cooling Down" />
+
+    <item
+        android:id="@+id/navigation_ready_review"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="Ready for Review" />
+
+    <item
+        android:id="@+id/navigation_savings"
+        android:icon="@android:drawable/ic_menu_view"
+        android:title="Savings" />
+</menu>

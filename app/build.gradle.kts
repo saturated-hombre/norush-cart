@@ -4,14 +4,12 @@ plugins {
 
 android {
     namespace = "com.miniproject.myapplication"
-    compileSdk {
-        version = release(37)
-    }
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.miniproject.myapplication"
-        minSdk = 24
-        targetSdk = 37
+        minSdk = 26
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -26,16 +24,26 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 
 dependencies {
-    implementation(libs.activity.ktx)
     implementation(libs.appcompat)
     implementation(libs.constraintlayout)
     implementation(libs.material)
+    
+    // WorkManager
+    implementation("androidx.work:work-runtime:2.9.0")
+    
+    // JSoup for HTML scraping
+    implementation("org.jsoup:jsoup:1.17.2")
+    
+    // Glide for image loading
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)
