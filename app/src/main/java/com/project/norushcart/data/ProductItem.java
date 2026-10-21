@@ -1,4 +1,4 @@
-package com.miniproject.myapplication.model;
+package com.project.norushcart.data;
 
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -18,17 +18,21 @@ public class ProductItem {
     private long timestampAdded;
     private long unlockTimestamp;
     private String status;
+    private double latitude;
+    private double longitude;
 
     public ProductItem() {
         this.timestampAdded = System.currentTimeMillis();
-        // Default cooldown: 48 hours = 48 * 60 * 60 * 1000 ms = 172,800,000 ms
-        this.unlockTimestamp = this.timestampAdded + (48L * 3600L * 1000L);
+        this.unlockTimestamp = this.timestampAdded + 172800000L; // 48 hours in milliseconds
         this.status = STATUS_LOCKED;
-        this.sourcePlatform = "Online Store";
+        this.sourcePlatform = "Amazon";
+        this.latitude = 0.0;
+        this.longitude = 0.0;
     }
 
     public ProductItem(int id, String title, String imageUrl, double price, String sourcePlatform,
-                       String originalUrl, long timestampAdded, long unlockTimestamp, String status) {
+                       String originalUrl, long timestampAdded, long unlockTimestamp, String status,
+                       double latitude, double longitude) {
         this.id = id;
         this.title = title;
         this.imageUrl = imageUrl;
@@ -38,6 +42,22 @@ public class ProductItem {
         this.timestampAdded = timestampAdded;
         this.unlockTimestamp = unlockTimestamp;
         this.status = status;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public ProductItem(int id, String title, String imageUrl, double price, String sourcePlatform,
+                       String originalUrl, long timestampAdded, long unlockTimestamp, String status) {
+        this(id, title, imageUrl, price, sourcePlatform, originalUrl, timestampAdded, unlockTimestamp, status, 0.0, 0.0);
+    }
+
+    public ProductItem(String title, String imageUrl, double price, String sourcePlatform, String originalUrl) {
+        this();
+        this.title = title;
+        this.imageUrl = imageUrl;
+        this.price = price;
+        this.sourcePlatform = sourcePlatform;
+        this.originalUrl = originalUrl;
     }
 
     public int getId() {
@@ -110,6 +130,22 @@ public class ProductItem {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     public boolean isLocked() {

@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#F8F9FA">
+    android:layout_height="match_parent">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbarMain"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentTop="true"
         android:background="?attr/colorPrimary"
         app:title="NoRush Cart"
         app:titleTextColor="?attr/colorOnPrimary" />
@@ -22,74 +21,26 @@
         android:layout_above="@id/bottomNavigation"
         android:layout_below="@id/toolbarMain"
         android:orientation="vertical"
-        android:visibility="visible">
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="12dp"
-            app:cardBackgroundColor="#FFF8E1"
-            app:cardCornerRadius="12dp"
-            app:strokeColor="#FFE082"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="12dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="⏳"
-                    android:textSize="24sp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="48-Hour Impulsive Quarantine"
-                        android:textColor="#B06000"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="Items shared from Amazon &amp; Flipkart are locked here for 48 hours to prevent impulse buys."
-                        android:textColor="#795548"
-                        android:textSize="12sp" />
-                </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+        android:padding="8dp">
 
         <TextView
             android:id="@+id/tvEmptyCooling"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="32dp"
-            android:text="No items currently in cooling down queue.\n\nShare a link from Amazon or Flipkart, or tap '+ Add Link' above!"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="15sp"
+            android:text="No items currently in quarantine queue.\nShare product links from Amazon or Flipkart to intercept impulse buying!"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvCoolingDown"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingBottom="12dp" />
+            android:layout_height="match_parent" />
+
     </LinearLayout>
 
-    <!-- Container for Tab 2: Ready for Review -->
+    <!-- Container for Tab 2: Review Queue -->
     <LinearLayout
         android:id="@+id/containerReadyReview"
         android:layout_width="match_parent"
@@ -97,71 +48,24 @@
         android:layout_above="@id/bottomNavigation"
         android:layout_below="@id/toolbarMain"
         android:orientation="vertical"
+        android:padding="8dp"
         android:visibility="gone">
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="12dp"
-            app:cardBackgroundColor="#E6F4EA"
-            app:cardCornerRadius="12dp"
-            app:strokeColor="#A8DAB5"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="12dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="✅"
-                    android:textSize="24sp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Cooldown Complete: Time to Decide"
-                        android:textColor="#137333"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="Do you still really want these items? Buy now or discard to save money."
-                        android:textColor="#2D4D38"
-                        android:textSize="12sp" />
-                </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:id="@+id/tvEmptyReady"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="32dp"
-            android:text="No items ready for review yet.\nCheck back when your 48-hour cooldown expires!"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="15sp"
+            android:text="No items ready for review yet.\nItems will unlock here after their 48-hour cooldown expires!"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvReadyReview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingBottom="12dp" />
+            android:layout_height="match_parent" />
+
     </LinearLayout>
 
     <!-- Container for Tab 3: Savings Dashboard -->
@@ -172,27 +76,29 @@
         android:layout_above="@id/bottomNavigation"
         android:layout_below="@id/toolbarMain"
         android:orientation="vertical"
+        android:padding="12dp"
         android:visibility="gone">
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="12dp"
-            app:cardBackgroundColor="#1A73E8"
             app:cardCornerRadius="16dp"
-            app:cardElevation="6dp">
+            app:cardElevation="3dp"
+            app:strokeWidth="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="#E8F0FE"
+                android:gravity="center"
                 android:orientation="vertical"
                 android:padding="20dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Total Impulse Money Saved"
-                    android:textColor="#E8F0FE"
+                    android:text="🎉 Total Money Saved"
+                    android:textColor="#1A73E8"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
@@ -200,9 +106,9 @@
                     android:id="@+id/tvTotalMoneySaved"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="6dp"
                     android:text="₹0.00"
-                    android:textColor="#FFFFFF"
+                    android:textColor="#1967D2"
                     android:textSize="32sp"
                     android:textStyle="bold" />
 
@@ -210,49 +116,57 @@
                     android:id="@+id/tvDiscardedCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="0 impulse items successfully discarded"
-                    android:textColor="#E8F0FE"
+                    android:layout_marginTop="6dp"
+                    android:text="0 impulse purchases successfully resisted!"
+                    android:textColor="#3C4043"
                     android:textSize="13sp" />
+
             </LinearLayout>
+
         </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="8dp"
-            android:text="History of Prevented Purchases"
-            android:textColor="?android:attr/textColorPrimary"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:text="Resisted Impulse Purchase History"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="15sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tvEmptySavings"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center"
-            android:padding="32dp"
-            android:text="No discarded impulse items yet.\nDiscard items after the 48h cooldown to build your savings!"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="15sp"
+            android:padding="24dp"
+            android:text="No impulse purchases discarded yet. High five when you save!"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvSavingsHistory"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingBottom="12dp" />
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
     </LinearLayout>
+
+    <!-- Container for Tab 4: Impulse Map -->
+    <FrameLayout
+        android:id="@+id/containerMap"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottomNavigation"
+        android:layout_below="@id/toolbarMain"
+        android:visibility="gone" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="?android:attr/windowBackground"
-        app:elevation="8dp"
         app:menu="@menu/bottom_nav_menu" />
 
 </RelativeLayout>

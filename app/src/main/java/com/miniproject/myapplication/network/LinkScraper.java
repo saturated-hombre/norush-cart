@@ -2,7 +2,7 @@ package com.miniproject.myapplication.network;
 
 import android.util.Log;
 
-import com.miniproject.myapplication.model.ProductItem;
+import com.project.norushcart.data.ProductItem;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;

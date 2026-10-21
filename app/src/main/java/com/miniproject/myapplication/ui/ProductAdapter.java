@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 import com.miniproject.myapplication.R;
-import com.miniproject.myapplication.model.ProductItem;
+import com.project.norushcart.data.ProductItem;
 
 import java.util.ArrayList;
 import java.util.List;

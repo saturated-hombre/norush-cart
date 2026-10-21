@@ -25,24 +25,30 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.miniproject.myapplication.database.DatabaseHelper;
-import com.miniproject.myapplication.model.ProductItem;
-import com.miniproject.myapplication.service.SchedulerHelper;
 import com.miniproject.myapplication.ui.ProductAdapter;
-import com.miniproject.myapplication.ui.ShareReceiverActivity;
 import com.miniproject.myapplication.ui.WebViewActivity;
+import com.project.norushcart.data.ProductItem;
+import com.project.norushcart.service.SchedulerHelper;
+import com.project.norushcart.ui.CheckoutWebViewActivity;
+import com.project.norushcart.ui.CooldownAdapter;
+import com.project.norushcart.ui.ImpulseMapFragment;
+import com.project.norushcart.ui.ReviewAdapter;
+import com.project.norushcart.ui.ShareReceiverActivity;
 
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements ProductAdapter.OnItemActionListener {
+public class MainActivity extends AppCompatActivity implements CooldownAdapter.OnFastForwardListener, ReviewAdapter.OnReviewActionListener {
 
     private static final int PERMISSION_REQUEST_NOTIFICATIONS = 101;
 
     private LinearLayout containerCoolingDown;
     private LinearLayout containerReadyReview;
     private LinearLayout containerSavings;
+    private View containerMap;
 
     private RecyclerView rvCoolingDown;
     private RecyclerView rvReadyReview;
@@ -57,8 +63,8 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
 
     private BottomNavigationView bottomNavigation;
 
-    private ProductAdapter adapterCoolingDown;
-    private ProductAdapter adapterReadyReview;
+    private CooldownAdapter adapterCoolingDown;
+    private ReviewAdapter adapterReadyReview;
     private ProductAdapter adapterSavings;
 
     private DatabaseHelper dbHelper;
@@ -78,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         containerCoolingDown = findViewById(R.id.containerCoolingDown);
         containerReadyReview = findViewById(R.id.containerReadyReview);
         containerSavings = findViewById(R.id.containerSavings);
+        containerMap = findViewById(R.id.containerMap);
 
         rvCoolingDown = findViewById(R.id.rvCoolingDown);
         rvReadyReview = findViewById(R.id.rvReadyReview);
@@ -95,9 +102,13 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         setupRecyclerViews();
         setupBottomNavigation();
 
+        // Attach ImpulseMapFragment
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.containerMap, new ImpulseMapFragment())
+                .commit();
+
         checkNotificationPermission();
 
-        // Check if intent directs us to a specific tab
         int selectedTab = getIntent().getIntExtra("SELECT_TAB", 0);
         selectTab(selectedTab);
 
@@ -105,24 +116,32 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         timerRunnable = new Runnable() {
             @Override
             public void run() {
-                // Refresh countdown timers and check for auto unlocked items
                 refreshData();
-                timerHandler.postDelayed(this, 1000); // refresh every 1s
+                timerHandler.postDelayed(this, 1000);
             }
         };
     }
 
     private void setupRecyclerViews() {
         rvCoolingDown.setLayoutManager(new LinearLayoutManager(this));
-        adapterCoolingDown = new ProductAdapter(this, this);
+        adapterCoolingDown = new CooldownAdapter(this, this);
         rvCoolingDown.setAdapter(adapterCoolingDown);
 
         rvReadyReview.setLayoutManager(new LinearLayoutManager(this));
-        adapterReadyReview = new ProductAdapter(this, this);
+        adapterReadyReview = new ReviewAdapter(this, this);
         rvReadyReview.setAdapter(adapterReadyReview);
 
         rvSavingsHistory.setLayoutManager(new LinearLayoutManager(this));
-        adapterSavings = new ProductAdapter(this, this);
+        adapterSavings = new ProductAdapter(this, new ProductAdapter.OnItemActionListener() {
+            @Override
+            public void onBuyNow(ProductItem item) {}
+
+            @Override
+            public void onDiscard(ProductItem item) {}
+
+            @Override
+            public void onDebugFastForward(ProductItem item) {}
+        });
         rvSavingsHistory.setAdapter(adapterSavings);
     }
 
@@ -141,6 +160,9 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
             } else if (itemId == R.id.navigation_savings) {
                 updateTabVisibility(2);
                 return true;
+            } else if (itemId == R.id.navigation_map) {
+                updateTabVisibility(3);
+                return true;
             }
             return false;
         });
@@ -150,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         containerCoolingDown.setVisibility(index == 0 ? View.VISIBLE : View.GONE);
         containerReadyReview.setVisibility(index == 1 ? View.VISIBLE : View.GONE);
         containerSavings.setVisibility(index == 2 ? View.VISIBLE : View.GONE);
+        containerMap.setVisibility(index == 3 ? View.VISIBLE : View.GONE);
         refreshData();
     }
 
@@ -160,6 +183,8 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
             targetId = R.id.navigation_ready_review;
         } else if (index == 2) {
             targetId = R.id.navigation_savings;
+        } else if (index == 3) {
+            targetId = R.id.navigation_map;
         }
 
         bottomNavigation.setSelectedItemId(targetId);
@@ -171,13 +196,18 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
     protected void onResume() {
         super.onResume();
         refreshData();
-        timerHandler.post(timerRunnable);
+        if (timerHandler != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+            timerHandler.post(timerRunnable);
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        timerHandler.removeCallbacks(timerRunnable);
+        if (timerHandler != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+        }
     }
 
     private void refreshData() {
@@ -202,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
 
         NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("en", "IN"));
         tvTotalMoneySaved.setText(format.format(totalSaved));
-        tvDiscardedCount.setText(countDiscarded + " impulse purchases successfully prevented!");
+        tvDiscardedCount.setText(countDiscarded + " impulse purchases successfully resisted!");
     }
 
     @Override
@@ -246,30 +276,35 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         builder.show();
     }
 
-    // ProductAdapter Callbacks
+    // CooldownAdapter callback
     @Override
-    public void onBuyNow(ProductItem item) {
-        dbHelper.updateItemStatus(item.getId(), ProductItem.STATUS_PURCHASED);
-        refreshData();
-
-        Intent intent = new Intent(this, WebViewActivity.class);
-        intent.putExtra(WebViewActivity.EXTRA_URL, item.getOriginalUrl());
-        intent.putExtra(WebViewActivity.EXTRA_TITLE, item.getTitle());
-        startActivity(intent);
-    }
-
-    @Override
-    public void onDiscard(ProductItem item) {
-        dbHelper.updateItemStatus(item.getId(), ProductItem.STATUS_DISCARDED);
-        refreshData();
-        Toast.makeText(this, "🎉 Item discarded! You saved " + item.getFormattedPrice() + "!", Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onDebugFastForward(ProductItem item) {
+    public void onFastForward(ProductItem item) {
         SchedulerHelper.scheduleDebugFastForward(this, item.getId());
         refreshData();
-        Toast.makeText(this, "⚡ Fast-forward active! Cooldown will expire in 10 seconds.", Toast.LENGTH_LONG).show();
+        View rootView = findViewById(android.R.id.content);
+        if (rootView != null) {
+            Snackbar.make(rootView, "⚡ Fast-forward active! Cooldown expires in 10 seconds.", Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    // ReviewAdapter callbacks
+    @Override
+    public void onDiscard(ProductItem item, int position) {
+        refreshData();
+        View rootView = findViewById(android.R.id.content);
+        if (rootView != null) {
+            Snackbar.make(rootView, "🎉 Item discarded! You saved " + item.getFormattedPrice() + "!", Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onBuyNow(ProductItem item) {
+        refreshData();
+        Intent intent = new Intent(this, CheckoutWebViewActivity.class);
+        intent.putExtra(CheckoutWebViewActivity.EXTRA_ITEM_ID, item.getId());
+        intent.putExtra(CheckoutWebViewActivity.EXTRA_URL, item.getOriginalUrl());
+        intent.putExtra(CheckoutWebViewActivity.EXTRA_TITLE, item.getTitle());
+        startActivity(intent);
     }
 
     private void checkNotificationPermission() {

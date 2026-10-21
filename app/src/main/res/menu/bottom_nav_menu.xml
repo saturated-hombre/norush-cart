@@ -2,16 +2,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/navigation_cooling_down"
-        android:icon="@android:drawable/ic_menu_recent_history"
+        android:icon="@drawable/ic_timer"
         android:title="Cooling Down" />
 
     <item
         android:id="@+id/navigation_ready_review"
-        android:icon="@android:drawable/ic_menu_edit"
-        android:title="Ready for Review" />
+        android:icon="@drawable/ic_checklist"
+        android:title="Review Queue" />
 
     <item
         android:id="@+id/navigation_savings"
-        android:icon="@android:drawable/ic_menu_view"
+        android:icon="@drawable/ic_savings"
         android:title="Savings" />
+
+    <item
+        android:id="@+id/navigation_map"
+        android:icon="@drawable/ic_map"
+        android:title="Impulse Map" />
 </menu>

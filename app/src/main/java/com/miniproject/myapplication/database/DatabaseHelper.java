@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.miniproject.myapplication.model.ProductItem;
+import com.project.norushcart.data.ProductItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "norush_cart.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public static final String TABLE_COOLDOWN = "cooldown_items";
     public static final String COLUMN_ID = "id";
@@ -26,6 +26,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_TIMESTAMP_ADDED = "timestamp_added";
     public static final String COLUMN_UNLOCK_TIMESTAMP = "unlock_timestamp";
     public static final String COLUMN_STATUS = "status";
+    public static final String COLUMN_LATITUDE = "latitude";
+    public static final String COLUMN_LONGITUDE = "longitude";
 
     private static DatabaseHelper instance;
 
@@ -51,14 +53,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_ORIGINAL_URL + " TEXT NOT NULL, "
                 + COLUMN_TIMESTAMP_ADDED + " INTEGER, "
                 + COLUMN_UNLOCK_TIMESTAMP + " INTEGER, "
-                + COLUMN_STATUS + " TEXT NOT NULL)";
+                + COLUMN_STATUS + " TEXT NOT NULL, "
+                + COLUMN_LATITUDE + " REAL DEFAULT 0.0, "
+                + COLUMN_LONGITUDE + " REAL DEFAULT 0.0)";
         db.execSQL(CREATE_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_COOLDOWN);
-        onCreate(db);
+        if (oldVersion < 2) {
+            db.execSQL("ALTER TABLE " + TABLE_COOLDOWN + " ADD COLUMN " + COLUMN_LATITUDE + " REAL DEFAULT 0.0");
+            db.execSQL("ALTER TABLE " + TABLE_COOLDOWN + " ADD COLUMN " + COLUMN_LONGITUDE + " REAL DEFAULT 0.0");
+        } else {
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_COOLDOWN);
+            onCreate(db);
+        }
     }
 
     public long insertItem(ProductItem item) {
@@ -72,6 +81,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_TIMESTAMP_ADDED, item.getTimestampAdded());
         values.put(COLUMN_UNLOCK_TIMESTAMP, item.getUnlockTimestamp());
         values.put(COLUMN_STATUS, item.getStatus());
+        values.put(COLUMN_LATITUDE, item.getLatitude());
+        values.put(COLUMN_LONGITUDE, item.getLongitude());
 
         long id = db.insert(TABLE_COOLDOWN, null, values);
         if (id != -1) {
@@ -198,19 +209,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.delete(TABLE_COOLDOWN, COLUMN_ID + " = ?", new String[]{String.valueOf(id)});
     }
 
+    public long setItemUnlockTimestamp(int itemId, long unlockTimestamp) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_UNLOCK_TIMESTAMP, unlockTimestamp);
+        values.put(COLUMN_STATUS, ProductItem.STATUS_LOCKED);
+        db.update(TABLE_COOLDOWN, values, COLUMN_ID + " = ?", new String[]{String.valueOf(itemId)});
+        return unlockTimestamp;
+    }
+
     /**
      * Developer Testing Utility:
      * Sets unlock_timestamp for the item to 10 seconds from now.
      * Keeps status as LOCKED.
      */
     public long debugFastForwardCooldown(int itemId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        long newUnlockTime = System.currentTimeMillis() + 10000L; // 10 seconds from now
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_UNLOCK_TIMESTAMP, newUnlockTime);
-        values.put(COLUMN_STATUS, ProductItem.STATUS_LOCKED);
-        db.update(TABLE_COOLDOWN, values, COLUMN_ID + " = ?", new String[]{String.valueOf(itemId)});
-        return newUnlockTime;
+        return setItemUnlockTimestamp(itemId, System.currentTimeMillis() + 10000L);
     }
 
     private ProductItem cursorToProductItem(Cursor cursor) {
@@ -224,6 +238,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long unlockTimestamp = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_UNLOCK_TIMESTAMP));
         String status = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS));
 
-        return new ProductItem(id, title, imageUrl, price, sourcePlatform, originalUrl, timestampAdded, unlockTimestamp, status);
+        int latIndex = cursor.getColumnIndex(COLUMN_LATITUDE);
+        int lngIndex = cursor.getColumnIndex(COLUMN_LONGITUDE);
+        double latitude = (latIndex != -1) ? cursor.getDouble(latIndex) : 0.0;
+        double longitude = (lngIndex != -1) ? cursor.getDouble(lngIndex) : 0.0;
+
+        return new ProductItem(id, title, imageUrl, price, sourcePlatform, originalUrl, timestampAdded, unlockTimestamp, status, latitude, longitude);
     }
 }
