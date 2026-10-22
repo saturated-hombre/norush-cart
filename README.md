@@ -63,7 +63,7 @@
 #### 3. Add Key to `local.properties`
 In your project root directory, add the key to `local.properties` (this file is gitignored and will never be committed):
 ```properties
-MAPS_API_KEY=AIzaSyYourActualGoogleMapsApiKeyHere
+MAPS_API_KEY=YourActualGoogleMapsApiKeyHere
 ```
 *(The Google Secrets Gradle Plugin automatically reads this key at compile time and injects it into both `AndroidManifest.xml` and `BuildConfig.MAPS_API_KEY`).*
 
