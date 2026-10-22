@@ -1,5 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Base Canvas & Surface Hierarchy (Dark Indigo Space) -->
+    <color name="canvas_base">#090422</color>
+    <color name="canvas_root">#0D0630</color>
+    <color name="surface_container_lowest">#0D0630</color>
+    <color name="surface_container_low">#160E3B</color>
+    <color name="surface_container">#1E154A</color>
+    <color name="surface_container_high">#281D60</color>
+    <color name="surface_container_highest">#322575</color>
+    <color name="surface_dim">#130C35</color>
+    <color name="surface_bright">#39345E</color>
+
+    <!-- Translucent Surfaces for Glassmorphism -->
+    <color name="glass_card_bg">#B31E154A</color> <!-- ~70% #1E154A -->
+    <color name="glass_sheet_bg">#E6160E3B</color> <!-- ~90% #160E3B -->
+    <color name="glass_nav_bg">#EB160E3B</color>   <!-- ~92% #160E3B -->
+    <color name="glass_border">#1AFFFFFF</color>   <!-- ~10% white -->
+    <color name="glass_border_active">#26FFFFFF</color> <!-- ~15% white -->
+
+    <!-- Primary Accent & Gradients (Iridescent Refraction) -->
+    <color name="primary">#00F0FF</color>
+    <color name="on_primary">#00363A</color>
+    <color name="primary_container">#00F0FF</color>
+    <color name="on_primary_container">#006970</color>
+    <color name="primary_light">#DBFCFF</color>
+
+    <!-- Secondary (Royal Azure) -->
+    <color name="secondary">#3B82F6</color>
+    <color name="on_secondary">#002E6A</color>
+    <color name="secondary_container">#0566D9</color>
+    <color name="on_secondary_container">#E6ECFF</color>
+    <color name="secondary_light">#ADC6FF</color>
+
+    <!-- Tertiary (Electric Fuchsia) -->
+    <color name="tertiary">#EC4899</color>
+    <color name="on_tertiary">#640039</color>
+    <color name="tertiary_container">#FFCCDD</color>
+    <color name="on_tertiary_container">#B4146E</color>
+
+    <!-- Warm Amber / Solar (Used in unlock ring & Locked state) -->
+    <color name="amber_solar">#F59E0B</color>
+    <color name="amber_glow">#FBBF24</color>
+    <color name="accent_amber">#F59E0B</color>
+
+    <!-- Semantic Status Tones -->
+    <!-- LOCKED / Cooling -->
+    <color name="status_locked">#FBBF24</color>
+    <color name="status_locked_dark">#F59E0B</color>
+    <color name="status_locked_container">#26F59E0B</color>
+
+    <!-- UNLOCKED / Ready -->
+    <color name="status_unlocked">#34D399</color>
+    <color name="status_unlocked_dark">#10B981</color>
+    <color name="status_unlocked_container">#2610B981</color>
+
+    <!-- DISCARDED / Saved -->
+    <color name="status_discarded">#94A3B8</color>
+    <color name="status_discarded_dark">#64748B</color>
+    <color name="status_discarded_container">#2094A3B8</color>
+
+    <!-- PURCHASED / Proceeded -->
+    <color name="status_purchased">#38BDF8</color>
+    <color name="status_purchased_dark">#60A5FA</color>
+    <color name="status_purchased_container">#2638BDF8</color>
+
+    <!-- Text & Content Colors -->
+    <color name="text_primary">#F2F0FA</color>
+    <color name="text_secondary">#A9A3C9</color>
+    <color name="text_tertiary">#7F77A8</color>
+    <color name="text_disabled">#534D75</color>
+
+    <!-- Outline & Borders -->
+    <color name="outline">#3B494B</color>
+    <color name="outline_variant">#221C42</color>
+
+    <!-- Universal basic colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00000000</color>
 </resources>

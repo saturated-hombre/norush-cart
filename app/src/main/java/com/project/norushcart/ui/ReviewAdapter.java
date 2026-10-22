@@ -27,6 +27,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
     public interface OnReviewActionListener {
         void onDiscard(ProductItem item, int position);
         void onBuyNow(ProductItem item);
+        void onFindInStore(ProductItem item);
     }
 
     private final Context context;
@@ -74,6 +75,9 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         TextView tvPlatformBadge;
         TextView tvProductTitle;
         TextView tvProductPrice;
+        View layoutLocationChipReview;
+        TextView tvLocationChipReview;
+        MaterialButton btnFindInStore;
         MaterialButton btnDiscard;
         MaterialButton btnBuyNow;
 
@@ -83,6 +87,9 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
             tvPlatformBadge = itemView.findViewById(R.id.tvPlatformBadge);
             tvProductTitle = itemView.findViewById(R.id.tvProductTitle);
             tvProductPrice = itemView.findViewById(R.id.tvProductPrice);
+            layoutLocationChipReview = itemView.findViewById(R.id.layoutLocationChipReview);
+            tvLocationChipReview = itemView.findViewById(R.id.tvLocationChipReview);
+            btnFindInStore = itemView.findViewById(R.id.btnFindInStore);
             btnDiscard = itemView.findViewById(R.id.btnDiscard);
             btnBuyNow = itemView.findViewById(R.id.btnBuyNow);
         }
@@ -90,30 +97,39 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         public void bind(ProductItem item, int position) {
             tvProductTitle.setText(item.getTitle());
             tvProductPrice.setText(item.getFormattedPrice());
-            tvPlatformBadge.setText(item.getSourcePlatform());
-
-            if ("Flipkart".equalsIgnoreCase(item.getSourcePlatform())) {
-                tvPlatformBadge.setBackgroundColor(Color.parseColor("#FFF3E0"));
-                tvPlatformBadge.setTextColor(Color.parseColor("#E65100"));
-            } else {
-                tvPlatformBadge.setBackgroundColor(Color.parseColor("#E6F4EA"));
-                tvPlatformBadge.setTextColor(Color.parseColor("#137333"));
-            }
+            tvPlatformBadge.setText(item.getSourcePlatform() != null ? item.getSourcePlatform() : "Online Store");
 
             if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
                 Glide.with(context)
                         .load(item.getImageUrl())
-                        .placeholder(R.drawable.ic_launcher_background)
-                        .error(R.drawable.ic_launcher_foreground)
+                        .placeholder(R.drawable.bg_privacy_pill)
+                        .error(R.drawable.bg_privacy_pill)
                         .into(ivProductImage);
             } else {
-                ivProductImage.setImageResource(R.drawable.ic_launcher_background);
+                ivProductImage.setImageResource(R.drawable.bg_privacy_pill);
             }
+
+            if (item.hasLocation()) {
+                layoutLocationChipReview.setVisibility(View.VISIBLE);
+                if (item.getPlaceLabel() != null && !item.getPlaceLabel().isEmpty()) {
+                    tvLocationChipReview.setText("📍 " + item.getPlaceLabel());
+                } else {
+                    tvLocationChipReview.setText("📍 Geotagged");
+                }
+            } else {
+                layoutLocationChipReview.setVisibility(View.GONE);
+            }
+
+            btnFindInStore.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onFindInStore(item);
+                }
+            });
 
             btnDiscard.setOnClickListener(v -> {
                 DatabaseHelper.getInstance(context).updateItemStatus(item.getId(), ProductItem.STATUS_DISCARDED);
                 if (listener != null) {
-                    listener.onDiscard(item, getAdapterPosition());
+                    listener.onDiscard(item, getBindingAdapterPosition());
                 }
             });
 
@@ -131,3 +147,4 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         }
     }
 }
+

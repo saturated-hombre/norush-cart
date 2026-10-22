@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_bottom_sheet"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <!-- Drag Handle -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_drag_handle" />
+
+    <!-- Store Name & Icon -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="🏬"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/tvStoreName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Apple Store - Local"
+            android:textAppearance="@style/TextAppearance.NoRushCart.TitleLg"
+            android:textColor="@color/text_primary" />
+    </LinearLayout>
+
+    <!-- Address -->
+    <TextView
+        android:id="@+id/tvStoreAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="123 Retail Ave, City Center"
+        android:textAppearance="@style/TextAppearance.NoRushCart.BodySm"
+        android:textColor="@color/text_secondary" />
+
+    <!-- Distance & Open Status Badges -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/chip_height"
+            android:background="@drawable/bg_chip_location"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="10dp">
+
+            <TextView
+                android:id="@+id/tvStoreDistance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📍 1.2 km away"
+                android:textAppearance="@style/TextAppearance.NoRushCart.LabelSm"
+                android:textColor="@color/secondary_light" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutStoreOpenStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/chip_height"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_chip_mint"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="10dp">
+
+            <TextView
+                android:id="@+id/tvStoreOpenStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🟢 Open now"
+                android:textAppearance="@style/TextAppearance.NoRushCart.LabelSm"
+                android:textColor="@color/status_unlocked" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Disclaimer Banner (Never claim stock or availability) -->
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.NoRushCart.Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:cardBackgroundColor="@color/surface_container"
+        app:strokeColor="@color/accent_amber"
+        app:strokeWidth="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:text="⚠️"
+                android:textSize="18sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvStoreDisclaimer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/store_sheet_disclaimer"
+                    android:textAppearance="@style/TextAppearance.NoRushCart.LabelMd"
+                    android:textColor="@color/accent_amber"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Inventory and real-time stock are not guaranteed."
+                    android:textAppearance="@style/TextAppearance.NoRushCart.BodySm"
+                    android:textColor="@color/text_tertiary"
+                    android:textSize="11sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Actions: Call Store + Directions -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCallStore"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/plus_jakarta_sans"
+            android:text="@string/store_sheet_call"
+            android:textAllCaps="false"
+            android:textColor="@color/secondary_light"
+            app:cornerRadius="@dimen/radius_pill"
+            app:strokeColor="@color/secondary" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDirections"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_button_gradient"
+            android:fontFamily="@font/plus_jakarta_sans"
+            android:text="@string/store_sheet_directions"
+            android:textAllCaps="false"
+            android:textColor="@color/canvas_base"
+            android:textStyle="bold"
+            app:backgroundTint="@null"
+            app:cornerRadius="@dimen/radius_pill" />
+    </LinearLayout>
+
+</LinearLayout>

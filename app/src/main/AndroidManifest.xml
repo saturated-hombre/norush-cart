@@ -20,7 +20,8 @@
         <!-- Google Maps API Key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="YOUR_MAPS_API_KEY_HERE" />
+            android:value="${MAPS_API_KEY}" />
+
 
         <activity
             android:name=".MainActivity"
@@ -36,13 +37,23 @@
             android:name="com.project.norushcart.ui.ShareReceiverActivity"
             android:exported="true"
             android:label="Add to NoRush Cart"
-            android:theme="@style/Theme.AppCompat.DayNight.Dialog">
+            android:theme="@style/Theme.NoRushCart.Dialog">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.project.norushcart.ui.OnboardingActivity"
+            android:exported="false"
+            android:label="Welcome to NoRush Cart" />
+
+        <activity
+            android:name="com.project.norushcart.ui.SettingsActivity"
+            android:exported="false"
+            android:label="Settings" />
 
         <activity
             android:name=".ui.WebViewActivity"
@@ -57,6 +68,12 @@
         <receiver
             android:name="com.project.norushcart.service.CooldownReceiver"
             android:exported="false" />
+
+        <receiver
+            android:name="com.project.norushcart.service.NotificationActionReceiver"
+            android:exported="false" />
+
+
 
     </application>
 

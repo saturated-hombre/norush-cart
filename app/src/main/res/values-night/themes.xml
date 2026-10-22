@@ -1,7 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.MyApplication" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
-    </style>
+    <!-- Dark theme explicitly inherits Base.Theme.MyApplication -->
+    <style name="Theme.MyApplication" parent="Base.Theme.MyApplication" />
+    <style name="Theme.NoRushCart" parent="Base.Theme.MyApplication" />
 </resources>

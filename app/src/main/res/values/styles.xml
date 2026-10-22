@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Card Styles -->
+    <style name="Widget.NoRushCart.Card" parent="Widget.Material3.CardView.Filled">
+        <item name="cardBackgroundColor">@color/glass_card_bg</item>
+        <item name="strokeColor">@color/glass_border</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cardCornerRadius">@dimen/radius_card</item>
+        <item name="cardElevation">0dp</item>
+        <item name="android:clipToPadding">false</item>
+    </style>
+
+    <style name="Widget.NoRushCart.Card.Active" parent="Widget.NoRushCart.Card">
+        <item name="strokeColor">@color/glass_border_active</item>
+    </style>
+
+    <!-- Glass Dialog Theme for ShareReceiverActivity -->
+    <style name="Theme.NoRushCart.Dialog" parent="Theme.Material3.Dark.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowElevation">16dp</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.65</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorSurface">@color/surface_container_high</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="fontFamily">@font/plus_jakarta_sans</item>
+    </style>
+
+    <!-- Bottom Navigation Bar Style -->
+    <style name="Widget.NoRushCart.BottomNav" parent="Widget.Material3.BottomNavigationView">
+        <item name="android:background">@color/glass_nav_bg</item>
+        <item name="elevation">8dp</item>
+        <item name="itemIconTint">@color/bottom_nav_color_selector</item>
+        <item name="itemTextColor">@color/bottom_nav_color_selector</item>
+        <item name="itemActiveIndicatorStyle">@style/Widget.NoRushCart.BottomNav.Indicator</item>
+        <item name="itemPaddingTop">10dp</item>
+        <item name="itemPaddingBottom">10dp</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.NoRushCart.BottomNav</item>
+    </style>
+
+    <style name="Widget.NoRushCart.BottomNav.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/surface_container_highest</item>
+        <item name="android:width">48dp</item>
+        <item name="android:height">32dp</item>
+    </style>
+
+    <style name="ThemeOverlay.NoRushCart.BottomNav" parent="">
+        <item name="colorOnSecondaryContainer">@color/primary</item>
+    </style>
+
+    <!-- Typography Styles -->
+    <style name="TextAppearance.NoRushCart.DisplayLg" parent="TextAppearance.Material3.DisplayLarge">
+        <item name="fontFamily">@font/plus_jakarta_sans</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">36sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.NoRushCart.HeadlineMd" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="fontFamily">@font/plus_jakarta_sans</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.NoRushCart.TitleLg" parent="TextAppearance.Material3.TitleLarge">
+        <item name="fontFamily">@font/plus_jakarta_sans</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.NoRushCart.TitleMd" parent="TextAppearance.Material3.TitleMedium">
+        <item name="fontFamily">@font/plus_jakarta_sans</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.NoRushCart.BodyMd" parent="TextAppearance.Material3.BodyMedium">
+        <item name="fontFamily">@font/plus_jakarta_sans</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="TextAppearance.NoRushCart.BodySm" parent="TextAppearance.Material3.BodySmall">
+        <item name="fontFamily">@font/plus_jakarta_sans</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="TextAppearance.NoRushCart.LabelMd" parent="TextAppearance.Material3.LabelMedium">
+        <item name="fontFamily">@font/plus_jakarta_sans</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.04</item>
+    </style>
+
+    <style name="TextAppearance.NoRushCart.LabelSm" parent="TextAppearance.Material3.LabelSmall">
+        <item name="fontFamily">@font/plus_jakarta_sans</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.06</item>
+    </style>
+</resources>

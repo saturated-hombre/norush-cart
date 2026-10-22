@@ -96,6 +96,36 @@ public class CooldownReceiver extends BroadcastReceiver {
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent);
 
+        if (itemId > 0) {
+            // Action 1: Buy Now
+            Intent buyIntent = new Intent(context, com.project.norushcart.ui.CheckoutWebViewActivity.class);
+            buyIntent.putExtra(com.project.norushcart.ui.CheckoutWebViewActivity.EXTRA_ITEM_ID, itemId);
+            if (item != null) {
+                buyIntent.putExtra(com.project.norushcart.ui.CheckoutWebViewActivity.EXTRA_URL, item.getOriginalUrl());
+                buyIntent.putExtra(com.project.norushcart.ui.CheckoutWebViewActivity.EXTRA_TITLE, item.getTitle());
+            }
+            buyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            PendingIntent buyPendingIntent = PendingIntent.getActivity(
+                    context,
+                    itemId * 10 + 1,
+                    buyIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+            );
+            builder.addAction(android.R.drawable.ic_menu_send, "Buy Now", buyPendingIntent);
+
+            // Action 2: Discard & Save
+            Intent discardIntent = new Intent(context, NotificationActionReceiver.class);
+            discardIntent.setAction(NotificationActionReceiver.ACTION_DISCARD);
+            discardIntent.putExtra(NotificationActionReceiver.EXTRA_ITEM_ID, itemId);
+            PendingIntent discardPendingIntent = PendingIntent.getBroadcast(
+                    context,
+                    itemId * 10 + 2,
+                    discardIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+            );
+            builder.addAction(android.R.drawable.ic_menu_delete, "Discard & Save", discardPendingIntent);
+        }
+
         try {
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
             notificationManager.notify(itemId > 0 ? itemId : (int) System.currentTimeMillis(), builder.build());
@@ -104,3 +134,4 @@ public class CooldownReceiver extends BroadcastReceiver {
         }
     }
 }
+

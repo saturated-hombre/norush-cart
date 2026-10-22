@@ -64,6 +64,8 @@ public class CooldownAdapter extends RecyclerView.Adapter<CooldownAdapter.ViewHo
         TextView tvProductTitle;
         TextView tvProductPrice;
         TextView tvCountdownText;
+        View layoutLocationChip;
+        TextView tvLocationChip;
         MaterialButton btnDebugFastForward;
 
         public ViewHolder(@NonNull View itemView) {
@@ -73,33 +75,38 @@ public class CooldownAdapter extends RecyclerView.Adapter<CooldownAdapter.ViewHo
             tvProductTitle = itemView.findViewById(R.id.tvProductTitle);
             tvProductPrice = itemView.findViewById(R.id.tvProductPrice);
             tvCountdownText = itemView.findViewById(R.id.tvCountdownText);
+            layoutLocationChip = itemView.findViewById(R.id.layoutLocationChip);
+            tvLocationChip = itemView.findViewById(R.id.tvLocationChip);
             btnDebugFastForward = itemView.findViewById(R.id.btnDebugFastForward);
         }
 
         public void bind(ProductItem item) {
             tvProductTitle.setText(item.getTitle());
             tvProductPrice.setText(item.getFormattedPrice());
-            tvPlatformBadge.setText(item.getSourcePlatform());
-
-            if ("Flipkart".equalsIgnoreCase(item.getSourcePlatform())) {
-                tvPlatformBadge.setBackgroundColor(Color.parseColor("#FFF3E0"));
-                tvPlatformBadge.setTextColor(Color.parseColor("#E65100"));
-            } else {
-                tvPlatformBadge.setBackgroundColor(Color.parseColor("#E8F0FE"));
-                tvPlatformBadge.setTextColor(Color.parseColor("#1A73E8"));
-            }
+            tvPlatformBadge.setText(item.getSourcePlatform() != null ? item.getSourcePlatform() : "Online Store");
 
             if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
                 Glide.with(context)
                         .load(item.getImageUrl())
-                        .placeholder(R.drawable.ic_launcher_background)
-                        .error(R.drawable.ic_launcher_foreground)
+                        .placeholder(R.drawable.bg_privacy_pill)
+                        .error(R.drawable.bg_privacy_pill)
                         .into(ivProductImage);
             } else {
-                ivProductImage.setImageResource(R.drawable.ic_launcher_background);
+                ivProductImage.setImageResource(R.drawable.bg_privacy_pill);
             }
 
-            tvCountdownText.setText("⏳ Unlocks in: " + item.getRemainingTimeFormatted());
+            tvCountdownText.setText("⏳ " + item.getRemainingTimeFormatted());
+
+            if (item.hasLocation()) {
+                layoutLocationChip.setVisibility(View.VISIBLE);
+                if (item.getPlaceLabel() != null && !item.getPlaceLabel().isEmpty()) {
+                    tvLocationChip.setText("📍 " + item.getPlaceLabel());
+                } else {
+                    tvLocationChip.setText("📍 Geotagged");
+                }
+            } else {
+                layoutLocationChip.setVisibility(View.GONE);
+            }
 
             btnDebugFastForward.setOnClickListener(v -> {
                 if (listener != null) {
@@ -107,5 +114,6 @@ public class CooldownAdapter extends RecyclerView.Adapter<CooldownAdapter.ViewHo
                 }
             });
         }
+
     }
 }

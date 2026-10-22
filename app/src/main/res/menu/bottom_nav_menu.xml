@@ -3,20 +3,20 @@
     <item
         android:id="@+id/navigation_cooling_down"
         android:icon="@drawable/ic_timer"
-        android:title="Cooling Down" />
+        android:title="@string/tab_cooling_down" />
 
     <item
         android:id="@+id/navigation_ready_review"
         android:icon="@drawable/ic_checklist"
-        android:title="Review Queue" />
-
-    <item
-        android:id="@+id/navigation_savings"
-        android:icon="@drawable/ic_savings"
-        android:title="Savings" />
+        android:title="@string/tab_ready" />
 
     <item
         android:id="@+id/navigation_map"
         android:icon="@drawable/ic_map"
-        android:title="Impulse Map" />
+        android:title="@string/tab_impulse_map" />
+
+    <item
+        android:id="@+id/navigation_savings"
+        android:icon="@drawable/ic_savings"
+        android:title="@string/tab_saved" />
 </menu>

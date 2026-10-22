@@ -2,73 +2,93 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/canvas_root">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbarMain"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_alignParentTop="true"
-        android:background="?attr/colorPrimary"
-        app:title="NoRush Cart"
-        app:titleTextColor="?attr/colorOnPrimary" />
+        android:background="@color/glass_nav_bg"
+        android:elevation="4dp"
+        app:title="@string/app_name"
+        app:titleTextAppearance="@style/TextAppearance.NoRushCart.TitleLg"
+        app:titleTextColor="@color/text_primary" />
 
     <!-- Container for Tab 1: Cooling Down -->
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/containerCoolingDown"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottomNavigation"
-        android:layout_below="@id/toolbarMain"
-        android:orientation="vertical"
-        android:padding="8dp">
+        android:layout_below="@id/toolbarMain">
 
         <TextView
             android:id="@+id/tvEmptyCooling"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:gravity="center"
+            android:lineSpacingExtra="4dp"
             android:padding="32dp"
-            android:text="No items currently in quarantine queue.\nShare product links from Amazon or Flipkart to intercept impulse buying!"
-            android:textColor="?attr/colorOnSurfaceVariant"
+            android:text="@string/lbl_cooling_empty"
+            android:textAppearance="@style/TextAppearance.NoRushCart.BodyMd"
+            android:textColor="@color/text_secondary"
             android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvCoolingDown"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingTop="8dp"
+            android:paddingBottom="16dp" />
 
-    </LinearLayout>
+    </FrameLayout>
 
-    <!-- Container for Tab 2: Review Queue -->
-    <LinearLayout
+    <!-- Container for Tab 2: Ready for Review -->
+    <FrameLayout
         android:id="@+id/containerReadyReview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottomNavigation"
         android:layout_below="@id/toolbarMain"
-        android:orientation="vertical"
-        android:padding="8dp"
         android:visibility="gone">
 
         <TextView
             android:id="@+id/tvEmptyReady"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:gravity="center"
+            android:lineSpacingExtra="4dp"
             android:padding="32dp"
-            android:text="No items ready for review yet.\nItems will unlock here after their 48-hour cooldown expires!"
-            android:textColor="?attr/colorOnSurfaceVariant"
+            android:text="@string/lbl_ready_empty"
+            android:textAppearance="@style/TextAppearance.NoRushCart.BodyMd"
+            android:textColor="@color/text_secondary"
             android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvReadyReview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingTop="8dp"
+            android:paddingBottom="16dp" />
 
-    </LinearLayout>
+    </FrameLayout>
 
-    <!-- Container for Tab 3: Savings Dashboard -->
+    <!-- Container for Tab 3: Impulse Map -->
+    <FrameLayout
+        android:id="@+id/containerMap"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottomNavigation"
+        android:layout_below="@id/toolbarMain"
+        android:visibility="gone" />
+
+    <!-- Container for Tab 4: Savings Dashboard -->
     <LinearLayout
         android:id="@+id/containerSavings"
         android:layout_width="match_parent"
@@ -76,20 +96,18 @@
         android:layout_above="@id/bottomNavigation"
         android:layout_below="@id/toolbarMain"
         android:orientation="vertical"
-        android:padding="12dp"
+        android:padding="16dp"
         android:visibility="gone">
 
+        <!-- Hero Metric Card: Total Money Saved -->
         <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.NoRushCart.Card"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="3dp"
-            app:strokeWidth="0dp">
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#E8F0FE"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:padding="20dp">
@@ -97,10 +115,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="🎉 Total Money Saved"
-                    android:textColor="#1A73E8"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:text="@string/lbl_total_saved"
+                    android:textAppearance="@style/TextAppearance.NoRushCart.LabelMd"
+                    android:textColor="@color/primary" />
 
                 <TextView
                     android:id="@+id/tvTotalMoneySaved"
@@ -108,9 +125,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:text="₹0.00"
-                    android:textColor="#1967D2"
-                    android:textSize="32sp"
-                    android:textStyle="bold" />
+                    android:textAppearance="@style/TextAppearance.NoRushCart.DisplayLg"
+                    android:textColor="@color/primary_light" />
 
                 <TextView
                     android:id="@+id/tvDiscardedCount"
@@ -118,8 +134,38 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:text="0 impulse purchases successfully resisted!"
-                    android:textColor="#3C4043"
-                    android:textSize="13sp" />
+                    android:textAppearance="@style/TextAppearance.NoRushCart.BodyMd"
+                    android:textColor="@color/text_secondary" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Weekly Chart Card -->
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.NoRushCart.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lbl_weekly_trends"
+                    android:textAppearance="@style/TextAppearance.NoRushCart.TitleMd"
+                    android:textColor="@color/text_primary" />
+
+                <com.project.norushcart.ui.WeeklySavingsChartView
+                    android:id="@+id/chartWeeklySavings"
+                    android:layout_width="match_parent"
+                    android:layout_height="130dp"
+                    android:layout_marginTop="8dp" />
 
             </LinearLayout>
 
@@ -130,42 +176,37 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="8dp"
-            android:text="Resisted Impulse Purchase History"
-            android:textColor="?attr/colorOnSurface"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+            android:text="@string/lbl_items_resisted"
+            android:textAppearance="@style/TextAppearance.NoRushCart.TitleMd"
+            android:textColor="@color/text_primary" />
 
         <TextView
             android:id="@+id/tvEmptySavings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:padding="24dp"
-            android:text="No impulse purchases discarded yet. High five when you save!"
-            android:textColor="?attr/colorOnSurfaceVariant"
+            android:padding="20dp"
+            android:text="@string/lbl_saved_empty"
+            android:textAppearance="@style/TextAppearance.NoRushCart.BodyMd"
+            android:textColor="@color/text_secondary"
             android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvSavingsHistory"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingBottom="16dp" />
 
     </LinearLayout>
 
-    <!-- Container for Tab 4: Impulse Map -->
-    <FrameLayout
-        android:id="@+id/containerMap"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/bottomNavigation"
-        android:layout_below="@id/toolbarMain"
-        android:visibility="gone" />
-
+    <!-- Bottom Navigation Bar -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
+        style="@style/Widget.NoRushCart.BottomNav"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/bottom_nav_height"
         android:layout_alignParentBottom="true"
         app:menu="@menu/bottom_nav_menu" />
 

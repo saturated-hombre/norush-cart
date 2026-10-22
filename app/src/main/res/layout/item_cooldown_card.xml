@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.NoRushCart.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="8dp"
-    android:layout_marginVertical="6dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="2dp"
-    app:strokeWidth="1dp">
+    android:layout_marginHorizontal="@dimen/screen_margin_horizontal"
+    android:layout_marginVertical="8dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="12dp">
+        android:padding="16dp">
 
+        <!-- Top Content: Image & Details -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/ivProductImage"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
+                android:layout_width="@dimen/product_thumb_size"
+                android:layout_height="@dimen/product_thumb_size"
+                android:background="@color/surface_container_low"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_launcher_background" />
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -38,71 +38,114 @@
                     android:id="@+id/tvPlatformBadge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="#E8F0FE"
-                    android:paddingHorizontal="8dp"
-                    android:paddingVertical="2dp"
                     android:text="Amazon"
-                    android:textColor="#1A73E8"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
+                    android:textAppearance="@style/TextAppearance.NoRushCart.LabelSm"
+                    android:textColor="@color/primary" />
 
                 <TextView
                     android:id="@+id/tvProductTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="2dp"
                     android:ellipsize="end"
                     android:maxLines="2"
-                    android:text="Product Title"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:textAppearance="@style/TextAppearance.NoRushCart.TitleMd"
+                    android:textColor="@color/text_primary" />
 
                 <TextView
                     android:id="@+id/tvProductPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="₹999.00"
-                    android:textColor="?attr/colorPrimary"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
+                    android:textAppearance="@style/TextAppearance.NoRushCart.TitleLg"
+                    android:textColor="@color/primary_light" />
 
             </LinearLayout>
 
         </LinearLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginVertical="8dp"
-            android:background="?attr/colorOutlineVariant" />
-
+        <!-- Chips Row (Countdown & Location) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tvCountdownText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="⏳ Unlocks in: 47h 59m 12s"
-                android:textColor="#D93025"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+            <!-- Countdown Pill -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/chip_height"
+                android:background="@drawable/bg_pill_locked"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="10dp">
 
+                <TextView
+                    android:id="@+id/tvCountdownText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/plus_jakarta_sans"
+                    android:text="⏳ 47h 59m remaining"
+                    android:textAppearance="@style/TextAppearance.NoRushCart.LabelSm"
+                    android:textColor="@color/status_locked" />
+            </LinearLayout>
+
+            <!-- Location Chip -->
+            <LinearLayout
+                android:id="@+id/layoutLocationChip"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/chip_height"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_chip_location"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="10dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvLocationChip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📍 Trigger Spot"
+                    android:textAppearance="@style/TextAppearance.NoRushCart.LabelSm"
+                    android:textColor="@color/secondary_light" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <!-- Debug Fast Forward -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDebugFastForward"
                 style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="⚡ 10s Demo"
+                android:layout_height="32dp"
+                android:fontFamily="@font/plus_jakarta_sans"
+                android:padding="0dp"
+                android:text="@string/lbl_fast_forward_debug"
+                android:textColor="@color/text_tertiary"
                 android:textSize="11sp" />
 
         </LinearLayout>
+
+        <!-- Disabled Locked Action -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLockedAction"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="12dp"
+            android:backgroundTint="@color/surface_container_highest"
+            android:enabled="false"
+            android:fontFamily="@font/plus_jakarta_sans"
+            android:text="@string/btn_locked"
+            android:textAllCaps="false"
+            android:textColor="@color/text_disabled"
+            app:cornerRadius="@dimen/radius_pill"
+            app:icon="@drawable/ic_lock"
+            app:iconGravity="textStart"
+            app:iconTint="@color/text_disabled" />
 
     </LinearLayout>
 

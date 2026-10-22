@@ -1,12 +1,214 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Map View -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <!-- Top Floating Overlays Container -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="12dp">
+
+        <!-- Horizontal Filter Chips -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:paddingHorizontal="16dp"
+            android:scrollbars="none">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupMapFilters"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:selectionRequired="true"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipFilterAll"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:fontFamily="@font/plus_jakarta_sans"
+                    android:text="@string/map_filter_all"
+                    android:textColor="@color/text_primary"
+                    app:chipBackgroundColor="@color/surface_container_high"
+                    app:chipCornerRadius="@dimen/radius_pill"
+                    app:chipStrokeColor="@color/glass_border"
+                    app:chipStrokeWidth="1dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipFilterNight"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/plus_jakarta_sans"
+                    android:text="@string/map_filter_night"
+                    android:textColor="@color/text_primary"
+                    app:chipBackgroundColor="@color/surface_container_high"
+                    app:chipCornerRadius="@dimen/radius_pill"
+                    app:chipStrokeColor="@color/glass_border"
+                    app:chipStrokeWidth="1dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipFilterDay"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/plus_jakarta_sans"
+                    android:text="@string/map_filter_day"
+                    android:textColor="@color/text_primary"
+                    app:chipBackgroundColor="@color/surface_container_high"
+                    app:chipCornerRadius="@dimen/radius_pill"
+                    app:chipStrokeColor="@color/glass_border"
+                    app:chipStrokeWidth="1dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipFilterWeek"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/plus_jakarta_sans"
+                    android:text="@string/map_filter_week"
+                    android:textColor="@color/text_primary"
+                    app:chipBackgroundColor="@color/surface_container_high"
+                    app:chipCornerRadius="@dimen/radius_pill"
+                    app:chipStrokeColor="@color/glass_border"
+                    app:chipStrokeWidth="1dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipFilterStores"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/plus_jakarta_sans"
+                    android:text="@string/map_filter_stores"
+                    android:textColor="@color/text_primary"
+                    app:chipBackgroundColor="@color/surface_container_high"
+                    app:chipCornerRadius="@dimen/radius_pill"
+                    app:chipStrokeColor="@color/accent_amber"
+                    app:chipStrokeWidth="1dp" />
+
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
+
+        <!-- Floating Summary Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardMapSummary"
+            style="@style/Widget.NoRushCart.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/map_summary_title"
+                        android:textAppearance="@style/TextAppearance.NoRushCart.TitleMd"
+                        android:textColor="@color/primary" />
+
+                    <TextView
+                        android:id="@+id/tvMapSummaryCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.NoRushCart.LabelSm"
+                        android:textColor="@color/primary_light" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvMapSummaryInsight"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Quarantining items on the go maps your environmental triggers."
+                    android:textAppearance="@style/TextAppearance.NoRushCart.BodySm"
+                    android:textColor="@color/text_secondary" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+    <!-- Empty State Overlay (Hidden when there are geotagged items) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardMapEmptyState"
+        style="@style/Widget.NoRushCart.Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="24dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_map"
+                app:tint="@color/primary" />
+
+            <TextView
+                android:id="@+id/tvMapEmptyTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="No Hotspots Mapped"
+                android:textAppearance="@style/TextAppearance.NoRushCart.TitleMd"
+                android:textColor="@color/text_primary" />
+
+            <TextView
+                android:id="@+id/tvMapEmptyDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:lineSpacingExtra="3dp"
+                android:text="@string/map_empty_no_items"
+                android:textAppearance="@style/TextAppearance.NoRushCart.BodySm"
+                android:textColor="@color/text_secondary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnMapEmptyAction"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/plus_jakarta_sans"
+                android:text="@string/map_enable_location_btn"
+                android:textColor="@color/primary"
+                android:visibility="gone"
+                app:cornerRadius="@dimen/radius_pill" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 </FrameLayout>

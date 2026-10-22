@@ -18,21 +18,25 @@ public class ProductItem {
     private long timestampAdded;
     private long unlockTimestamp;
     private String status;
-    private double latitude;
-    private double longitude;
+    private Double latitude;
+    private Double longitude;
+    private Float locationAccuracy;
+    private String placeLabel;
 
     public ProductItem() {
         this.timestampAdded = System.currentTimeMillis();
         this.unlockTimestamp = this.timestampAdded + 172800000L; // 48 hours in milliseconds
         this.status = STATUS_LOCKED;
         this.sourcePlatform = "Amazon";
-        this.latitude = 0.0;
-        this.longitude = 0.0;
+        this.latitude = null;
+        this.longitude = null;
+        this.locationAccuracy = null;
+        this.placeLabel = null;
     }
 
     public ProductItem(int id, String title, String imageUrl, double price, String sourcePlatform,
                        String originalUrl, long timestampAdded, long unlockTimestamp, String status,
-                       double latitude, double longitude) {
+                       Double latitude, Double longitude, Float locationAccuracy, String placeLabel) {
         this.id = id;
         this.title = title;
         this.imageUrl = imageUrl;
@@ -42,13 +46,21 @@ public class ProductItem {
         this.timestampAdded = timestampAdded;
         this.unlockTimestamp = unlockTimestamp;
         this.status = status;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.latitude = (latitude != null && (Math.abs(latitude) > 0.000001 || (longitude != null && Math.abs(longitude) > 0.000001))) ? latitude : null;
+        this.longitude = (longitude != null && (Math.abs(longitude) > 0.000001 || (latitude != null && Math.abs(latitude) > 0.000001))) ? longitude : null;
+        this.locationAccuracy = locationAccuracy;
+        this.placeLabel = placeLabel;
+    }
+
+    public ProductItem(int id, String title, String imageUrl, double price, String sourcePlatform,
+                       String originalUrl, long timestampAdded, long unlockTimestamp, String status,
+                       Double latitude, Double longitude) {
+        this(id, title, imageUrl, price, sourcePlatform, originalUrl, timestampAdded, unlockTimestamp, status, latitude, longitude, null, null);
     }
 
     public ProductItem(int id, String title, String imageUrl, double price, String sourcePlatform,
                        String originalUrl, long timestampAdded, long unlockTimestamp, String status) {
-        this(id, title, imageUrl, price, sourcePlatform, originalUrl, timestampAdded, unlockTimestamp, status, 0.0, 0.0);
+        this(id, title, imageUrl, price, sourcePlatform, originalUrl, timestampAdded, unlockTimestamp, status, null, null, null, null);
     }
 
     public ProductItem(String title, String imageUrl, double price, String sourcePlatform, String originalUrl) {
@@ -59,6 +71,7 @@ public class ProductItem {
         this.sourcePlatform = sourcePlatform;
         this.originalUrl = originalUrl;
     }
+
 
     public int getId() {
         return id;
@@ -132,21 +145,51 @@ public class ProductItem {
         this.status = status;
     }
 
-    public double getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public double getLatitudeSafe() {
+        return latitude != null ? latitude : 0.0;
     }
 
-    public double getLongitude() {
+    public void setLatitude(Double latitude) {
+        this.latitude = (latitude != null && Math.abs(latitude) > 0.000001) ? latitude : null;
+    }
+
+    public Double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public double getLongitudeSafe() {
+        return longitude != null ? longitude : 0.0;
     }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = (longitude != null && Math.abs(longitude) > 0.000001) ? longitude : null;
+    }
+
+    public Float getLocationAccuracy() {
+        return locationAccuracy;
+    }
+
+    public void setLocationAccuracy(Float locationAccuracy) {
+        this.locationAccuracy = locationAccuracy;
+    }
+
+    public String getPlaceLabel() {
+        return placeLabel;
+    }
+
+    public void setPlaceLabel(String placeLabel) {
+        this.placeLabel = placeLabel;
+    }
+
+    public boolean hasLocation() {
+        return latitude != null && longitude != null &&
+                (Math.abs(latitude) > 0.000001 || Math.abs(longitude) > 0.000001);
+    }
+
 
     public boolean isLocked() {
         return STATUS_LOCKED.equalsIgnoreCase(this.status) && System.currentTimeMillis() < this.unlockTimestamp;

@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -16,11 +17,19 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     buildTypes {
+        debug {
+            buildConfigField("int", "COOLDOWN_MINUTES_DEBUG", "2")
+        }
         release {
             optimization {
                 enable = false
             }
+            buildConfigField("int", "COOLDOWN_MINUTES_DEBUG", "2880")
         }
     }
     compileOptions {
@@ -28,6 +37,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 }
+
 
 dependencies {
     implementation(libs.appcompat)
@@ -47,6 +57,8 @@ dependencies {
     // Google Maps & Location Services
     implementation("com.google.android.gms:play-services-maps:18.2.0")
     implementation("com.google.android.gms:play-services-location:21.2.0")
+    implementation("com.google.maps.android:android-maps-utils:3.9.0")
+    implementation("com.google.android.libraries.places:places:3.5.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)

@@ -1,3 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">NoRush Cart</string>
+
+    <!-- Bottom Navigation -->
+    <string name="tab_cooling_down">Cooling Down</string>
+    <string name="tab_ready">Ready</string>
+    <string name="tab_impulse_map">Impulse Map</string>
+    <string name="tab_saved">Saved</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title">Map Your Impulse Triggers</string>
+    <string name="onboarding_subtitle">See the physical locations where you are most tempted to spend. All location coordinates remain 100% private on your device.</string>
+    <string name="onboarding_privacy_guarantee">100% on-device · Never shared or uploaded</string>
+    <string name="onboarding_btn_allow">Enable Location</string>
+    <string name="onboarding_btn_skip">Skip for Now</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_location_section">Location &amp; Privacy</string>
+    <string name="settings_track_location">Track Impulse Locations</string>
+    <string name="settings_track_location_desc">Capture approximate GPS location when quarantining items</string>
+    <string name="settings_clear_history">Clear Location History</string>
+    <string name="settings_clear_history_desc">Strip location coordinates from all quarantined items</string>
+    <string name="settings_clear_history_confirm_title">Clear All Impulse Locations?</string>
+    <string name="settings_clear_history_confirm_msg">This will remove saved coordinates and custom place labels. Quarantined products will remain untouched.</string>
+    <string name="settings_clear_history_success">Location history cleared.</string>
+    <string name="settings_cooldown_section">Quarantine Policy</string>
+    <string name="settings_cooldown_period">Cooldown Period</string>
+    <string name="settings_cooldown_period_desc">48 hours (Deliberate delay to counteract urge patterns)</string>
+    <string name="settings_about_section">About</string>
+    <string name="settings_version">Version 1.0.0 (Mindful Sanctuary)</string>
+
+    <!-- Share Interception Sheet -->
+    <string name="share_sheet_title">Impulse Quarantined</string>
+    <string name="share_sheet_locked_subtitle">Locked for 48h to give your brain room to reflect.</string>
+    <string name="share_sheet_btn_done">Understood</string>
+    <string name="share_sheet_locating">Pinpointing impulse hotspot…</string>
+    <string name="share_sheet_scraping">Extracting product info…</string>
+    <string name="share_sheet_saving">Saving to quarantine…</string>
+
+    <!-- Impulse Map -->
+    <string name="map_title">Impulse Hotspots</string>
+    <string name="map_summary_title">Temptation Hotspots</string>
+    <string name="map_filter_all">All</string>
+    <string name="map_filter_night">Late Night (10PM–5AM)</string>
+    <string name="map_filter_day">Daytime</string>
+    <string name="map_filter_week">This Week</string>
+    <string name="map_empty_no_items">No geotagged impulse buys yet. Share an Amazon or Flipkart link to start mapping your spending triggers.</string>
+    <string name="map_empty_location_denied">Location permission is disabled. Enable it in Settings to visualize your trigger spots.</string>
+    <string name="map_enable_location_btn">Open Settings</string>
+    <string name="map_infowindow_single">₹%1$s impulse buy quarantined here</string>
+    <string name="map_infowindow_plural">%1$d impulse buys (₹%2$s) quarantined here</string>
+    <string name="map_sheet_label_this_place">Label this place</string>
+    <string name="map_sheet_label_hint">e.g., Home, Office, Couch</string>
+    <string name="map_sheet_save_label">Save Place Name</string>
+    <string name="map_items_at_location">Quarantined Here</string>
+
+    <!-- Actions & Cards -->
+    <string name="btn_buy_now">Buy Now</string>
+    <string name="btn_discard">Discard &amp; Save</string>
+    <string name="btn_locked">Cooling Down</string>
+    <string name="lbl_total_saved">Total Money Saved</string>
+    <string name="lbl_items_resisted">Impulses Resisted</string>
+    <string name="lbl_weekly_trends">Weekly Savings Impact</string>
+    <string name="lbl_cooling_empty">No items cooling down. Share a product link from Amazon or Flipkart to pause an impulse buy.</string>
+    <string name="lbl_ready_empty">No items ready for review yet. Quarantined items will unlock after 48 hours.</string>
+    <string name="lbl_saved_empty">No discarded items yet. Every time you discard an unlocked item, your money saved increases!</string>
+    <string name="lbl_fast_forward_debug">⚡ 10s Test</string>
+
+    <!-- Notifications -->
+    <string name="notif_channel_name">Cooldown Complete Alerts</string>
+    <string name="notif_channel_desc">Alerts when quarantined items finish their 48-hour cooling period</string>
+    <string name="notif_ready_title">Cooldown Complete: Time to Decide</string>
+    <string name="notif_ready_body">%1$s has finished cooling down. Do you still want to buy it?</string>
+    <string name="notif_action_buy">Buy</string>
+    <string name="notif_action_discard">Discard &amp; Save</string>
+
+    <!-- Phase 8: See it in person (Nearby Stores) -->
+    <string name="btn_find_in_store">🏬 Find in nearby store</string>
+    <string name="settings_find_nearby_stores">Find Nearby Stores</string>
+    <string name="settings_find_nearby_stores_desc">Search local retailers for items ready to review using real-time location</string>
+    <string name="settings_nearby_disclaimer_title">Nearby Store Search</string>
+    <string name="settings_nearby_disclaimer_msg">Nearby store search sends your current location to Google Maps. Do not use stored hotspot coordinates. Coordinates are used solely for real-time local search and are never saved to your purchase history.</string>
+    <string name="settings_nearby_disclaimer_agree">I Understand</string>
+    <string name="map_filter_stores">Stores</string>
+    <string name="store_sheet_call">Call Store</string>
+    <string name="store_sheet_directions">Directions</string>
+    <string name="store_sheet_disclaimer">May stock this item. Call to confirm.</string>
+    <string name="store_search_searching">Searching nearby stores…</string>
+    <string name="store_search_disabled_msg">Nearby store search is turned off in Settings. Enable \"Find nearby stores\" to search local retailers.</string>
+
+    <!-- Dialogs & General -->
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_clear">Clear</string>
+    <string name="dialog_ok">OK</string>
 </resources>
