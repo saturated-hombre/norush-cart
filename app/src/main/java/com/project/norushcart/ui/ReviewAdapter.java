@@ -16,7 +16,6 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 import com.miniproject.myapplication.R;
 import com.miniproject.myapplication.database.DatabaseHelper;
-import com.miniproject.myapplication.ui.WebViewActivity;
 import com.project.norushcart.data.ProductItem;
 
 import java.util.ArrayList;
@@ -75,6 +74,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         TextView tvPlatformBadge;
         TextView tvProductTitle;
         TextView tvProductPrice;
+        TextView tvHoursOfWork;
         View layoutLocationChipReview;
         TextView tvLocationChipReview;
         MaterialButton btnFindInStore;
@@ -87,6 +87,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
             tvPlatformBadge = itemView.findViewById(R.id.tvPlatformBadge);
             tvProductTitle = itemView.findViewById(R.id.tvProductTitle);
             tvProductPrice = itemView.findViewById(R.id.tvProductPrice);
+            tvHoursOfWork = itemView.findViewById(R.id.tvHoursOfWork);
             layoutLocationChipReview = itemView.findViewById(R.id.layoutLocationChipReview);
             tvLocationChipReview = itemView.findViewById(R.id.tvLocationChipReview);
             btnFindInStore = itemView.findViewById(R.id.btnFindInStore);
@@ -98,6 +99,16 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
             tvProductTitle.setText(item.getTitle());
             tvProductPrice.setText(item.getFormattedPrice());
             tvPlatformBadge.setText(item.getSourcePlatform() != null ? item.getSourcePlatform() : "Online Store");
+
+            android.content.SharedPreferences prefs = context.getSharedPreferences(com.project.norushcart.location.LocationHelper.PREFS_NAME, Context.MODE_PRIVATE);
+            float hourlyWage = prefs.getFloat("hourly_wage", 0f);
+            if (hourlyWage > 0 && item.getPrice() > 0 && tvHoursOfWork != null) {
+                double hours = item.getPrice() / hourlyWage;
+                tvHoursOfWork.setText(String.format(java.util.Locale.getDefault(), "· %.1fh of work", hours));
+                tvHoursOfWork.setVisibility(View.VISIBLE);
+            } else if (tvHoursOfWork != null) {
+                tvHoursOfWork.setVisibility(View.GONE);
+            }
 
             if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
                 Glide.with(context)

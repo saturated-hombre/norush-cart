@@ -93,6 +93,60 @@ public class SettingsActivity extends AppCompatActivity {
 
         View rowClearHistory = findViewById(R.id.rowClearHistory);
         rowClearHistory.setOnClickListener(v -> showClearHistoryDialog());
+
+        // Mindful Economics: Hourly Wage Setting
+        android.widget.TextView tvCurrentHourlyWage = findViewById(R.id.tvCurrentHourlyWage);
+        android.content.SharedPreferences prefs = getSharedPreferences(LocationHelper.PREFS_NAME, MODE_PRIVATE);
+        float savedWage = prefs.getFloat("hourly_wage", 0f);
+        if (savedWage > 0) {
+            tvCurrentHourlyWage.setText("₹" + (int) savedWage + " / hr");
+        } else {
+            tvCurrentHourlyWage.setText("Not set");
+        }
+
+        View rowHourlyWage = findViewById(R.id.rowHourlyWage);
+        rowHourlyWage.setOnClickListener(v -> {
+            HapticHelper.tick(v);
+            android.widget.EditText input = new android.widget.EditText(this);
+            input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL);
+            input.setHint("e.g. 500");
+            float current = prefs.getFloat("hourly_wage", 0f);
+            if (current > 0) {
+                input.setText(String.valueOf((int) current));
+            }
+
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.settings_hourly_wage)
+                    .setMessage("Enter your estimated hourly wage/income rate (₹). This converts impulse purchase price tags into the hours of work required to afford them:")
+                    .setView(input)
+                    .setPositiveButton("Save", (dialog, which) -> {
+                        String txt = input.getText().toString().trim();
+                        if (!txt.isEmpty()) {
+                            try {
+                                float val = Float.parseFloat(txt);
+                                prefs.edit().putFloat("hourly_wage", val).apply();
+                                tvCurrentHourlyWage.setText("₹" + (int) val + " / hr");
+                                HapticHelper.confirm(rowHourlyWage);
+                            } catch (NumberFormatException ignored) {}
+                        }
+                    })
+                    .setNegativeButton(R.string.dialog_cancel, null)
+                    .show();
+        });
+
+        // Google Maps Platform Status
+        android.widget.TextView tvMapsKeyStatus = findViewById(R.id.tvMapsKeyStatus);
+        android.widget.TextView tvMapsPackageInfo = findViewById(R.id.tvMapsPackageInfo);
+        boolean hasValidKey = com.project.norushcart.location.NearbyStoresHelper.hasValidApiKey();
+        if (hasValidKey) {
+            tvMapsKeyStatus.setText(R.string.settings_maps_status_configured);
+            tvMapsKeyStatus.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.status_unlocked));
+            tvMapsPackageInfo.setText("Package: " + getPackageName() + " · Live SDK connected");
+        } else {
+            tvMapsKeyStatus.setText(R.string.settings_maps_status_missing);
+            tvMapsKeyStatus.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.amber_solar));
+            tvMapsPackageInfo.setText("Package: " + getPackageName() + "\nAdd MAPS_API_KEY in local.properties");
+        }
     }
 
     private void showClearHistoryDialog() {

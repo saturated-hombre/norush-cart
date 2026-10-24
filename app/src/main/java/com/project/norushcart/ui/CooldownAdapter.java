@@ -39,6 +39,32 @@ public class CooldownAdapter extends RecyclerView.Adapter<CooldownAdapter.ViewHo
         notifyDataSetChanged();
     }
 
+    public void tickVisibleCountdowns(RecyclerView recyclerView) {
+        if (recyclerView == null || items.isEmpty()) return;
+        int childCount = recyclerView.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            View child = recyclerView.getChildAt(i);
+            RecyclerView.ViewHolder holder = recyclerView.getChildViewHolder(child);
+            if (holder instanceof ViewHolder) {
+                int pos = holder.getBindingAdapterPosition();
+                if (pos >= 0 && pos < items.size()) {
+                    ProductItem item = items.get(pos);
+                    ((ViewHolder) holder).updateCountdownOnly(item);
+                }
+            }
+        }
+    }
+
+    public boolean hasAnyExpired() {
+        long now = System.currentTimeMillis();
+        for (ProductItem item : items) {
+            if (item.getUnlockTimestamp() <= now) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -63,6 +89,7 @@ public class CooldownAdapter extends RecyclerView.Adapter<CooldownAdapter.ViewHo
         TextView tvPlatformBadge;
         TextView tvProductTitle;
         TextView tvProductPrice;
+        TextView tvHoursOfWork;
         TextView tvCountdownText;
         View layoutLocationChip;
         TextView tvLocationChip;
@@ -74,6 +101,7 @@ public class CooldownAdapter extends RecyclerView.Adapter<CooldownAdapter.ViewHo
             tvPlatformBadge = itemView.findViewById(R.id.tvPlatformBadge);
             tvProductTitle = itemView.findViewById(R.id.tvProductTitle);
             tvProductPrice = itemView.findViewById(R.id.tvProductPrice);
+            tvHoursOfWork = itemView.findViewById(R.id.tvHoursOfWork);
             tvCountdownText = itemView.findViewById(R.id.tvCountdownText);
             layoutLocationChip = itemView.findViewById(R.id.layoutLocationChip);
             tvLocationChip = itemView.findViewById(R.id.tvLocationChip);
@@ -84,6 +112,16 @@ public class CooldownAdapter extends RecyclerView.Adapter<CooldownAdapter.ViewHo
             tvProductTitle.setText(item.getTitle());
             tvProductPrice.setText(item.getFormattedPrice());
             tvPlatformBadge.setText(item.getSourcePlatform() != null ? item.getSourcePlatform() : "Online Store");
+
+            android.content.SharedPreferences prefs = context.getSharedPreferences(com.project.norushcart.location.LocationHelper.PREFS_NAME, Context.MODE_PRIVATE);
+            float hourlyWage = prefs.getFloat("hourly_wage", 0f);
+            if (hourlyWage > 0 && item.getPrice() > 0 && tvHoursOfWork != null) {
+                double hours = item.getPrice() / hourlyWage;
+                tvHoursOfWork.setText(String.format(java.util.Locale.getDefault(), "· %.1fh of work", hours));
+                tvHoursOfWork.setVisibility(View.VISIBLE);
+            } else if (tvHoursOfWork != null) {
+                tvHoursOfWork.setVisibility(View.GONE);
+            }
 
             if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
                 Glide.with(context)
@@ -113,6 +151,12 @@ public class CooldownAdapter extends RecyclerView.Adapter<CooldownAdapter.ViewHo
                     listener.onFastForward(item);
                 }
             });
+        }
+
+        public void updateCountdownOnly(ProductItem item) {
+            if (tvCountdownText != null && item != null) {
+                tvCountdownText.setText("⏳ " + item.getRemainingTimeFormatted());
+            }
         }
 
     }

@@ -8,7 +8,8 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbarMain"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="wrap_content"
+        android:minHeight="?attr/actionBarSize"
         android:layout_alignParentTop="true"
         android:background="@color/glass_nav_bg"
         android:elevation="4dp"
@@ -141,6 +142,66 @@
 
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Dream Goal Vault Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardDreamGoal"
+            style="@style/Widget.NoRushCart.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvDreamGoalTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="🎯 Active Goal: Not set"
+                        android:textAppearance="@style/TextAppearance.NoRushCart.TitleMd"
+                        android:textColor="@color/text_primary" />
+
+                    <TextView
+                        android:id="@+id/tvDreamGoalPercent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0%"
+                        android:textAppearance="@style/TextAppearance.NoRushCart.LabelMd"
+                        android:textColor="@color/primary" />
+                </LinearLayout>
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/progressDreamGoal"
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp"
+                    android:layout_marginTop="10dp"
+                    android:progress="0"
+                    app:indicatorColor="@color/primary"
+                    app:trackColor="@color/surface_container_highest"
+                    app:trackCornerRadius="4dp" />
+
+                <TextView
+                    android:id="@+id/tvDreamGoalSubtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Tap to set a dream purchase goal (e.g. Vacation, Laptop)"
+                    android:textAppearance="@style/TextAppearance.NoRushCart.BodySm"
+                    android:textColor="@color/text_secondary" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- Weekly Chart Card -->
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.NoRushCart.Card"
@@ -206,7 +267,8 @@
         android:id="@+id/bottomNavigation"
         style="@style/Widget.NoRushCart.BottomNav"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_nav_height"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/bottom_nav_height"
         android:layout_alignParentBottom="true"
         app:menu="@menu/bottom_nav_menu" />
 

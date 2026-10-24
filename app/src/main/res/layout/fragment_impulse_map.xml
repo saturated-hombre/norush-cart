@@ -99,6 +99,19 @@
                     app:chipStrokeColor="@color/accent_amber"
                     app:chipStrokeWidth="1dp" />
 
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipFilterHeatmap"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/plus_jakarta_sans"
+                    android:text="@string/map_filter_heatmap"
+                    android:textColor="@color/text_primary"
+                    app:chipBackgroundColor="@color/surface_container_high"
+                    app:chipCornerRadius="@dimen/radius_pill"
+                    app:chipStrokeColor="@color/tertiary"
+                    app:chipStrokeWidth="1dp" />
+
             </com.google.android.material.chip.ChipGroup>
         </HorizontalScrollView>
 
@@ -206,6 +219,17 @@
                 android:text="@string/map_enable_location_btn"
                 android:textColor="@color/primary"
                 android:visibility="gone"
+                app:cornerRadius="@dimen/radius_pill" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGenerateSampleHotspots"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/plus_jakarta_sans"
+                android:text="✨ Load Demo Hotspots"
+                android:textColor="@color/primary"
                 app:cornerRadius="@dimen/radius_pill" />
 
         </LinearLayout>

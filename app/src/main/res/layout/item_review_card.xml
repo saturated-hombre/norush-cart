@@ -52,13 +52,29 @@
                     android:textAppearance="@style/TextAppearance.NoRushCart.TitleMd"
                     android:textColor="@color/text_primary" />
 
-                <TextView
-                    android:id="@+id/tvProductPrice"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:textAppearance="@style/TextAppearance.NoRushCart.TitleLg"
-                    android:textColor="@color/primary_light" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvProductPrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.NoRushCart.TitleLg"
+                        android:textColor="@color/primary_light" />
+
+                    <TextView
+                        android:id="@+id/tvHoursOfWork"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:textAppearance="@style/TextAppearance.NoRushCart.LabelSm"
+                        android:textColor="@color/text_tertiary"
+                        android:visibility="gone" />
+                </LinearLayout>
 
             </LinearLayout>
         </LinearLayout>

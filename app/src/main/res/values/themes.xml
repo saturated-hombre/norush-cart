@@ -19,8 +19,8 @@
         <item name="colorOnSurfaceVariant">@color/text_secondary</item>
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:textColorSecondary">@color/text_secondary</item>
-        <item name="android:statusBarColor">@color/canvas_root</item>
-        <item name="android:navigationBarColor">@color/glass_nav_bg</item>
+        <item name="android:statusBarColor">@color/transparent</item>
+        <item name="android:navigationBarColor">@color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="fontFamily">@font/plus_jakarta_sans</item>
     </style>

@@ -201,6 +201,106 @@
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/tvHoursOfLife"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textAppearance="@style/TextAppearance.NoRushCart.BodySm"
+                    android:textColor="@color/primary_light"
+                    android:visibility="gone" />
+
+                <!-- 1-Tap Trigger Emotion Logging -->
+                <TextView
+                    android:id="@+id/tvEmotionPrompt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="@string/emotion_prompt"
+                    android:textAppearance="@style/TextAppearance.NoRushCart.LabelSm"
+                    android:textColor="@color/text_secondary" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:clipToPadding="false"
+                    android:scrollbars="none">
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipGroupEmotions"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:singleSelection="true">
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipEmotionBored"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/plus_jakarta_sans"
+                            android:text="@string/emotion_bored"
+                            android:textColor="@color/text_primary"
+                            app:chipBackgroundColor="@color/surface_container_high"
+                            app:chipCornerRadius="@dimen/radius_pill"
+                            app:chipStrokeColor="@color/glass_border"
+                            app:chipStrokeWidth="1dp" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipEmotionStressed"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/plus_jakarta_sans"
+                            android:text="@string/emotion_stressed"
+                            android:textColor="@color/text_primary"
+                            app:chipBackgroundColor="@color/surface_container_high"
+                            app:chipCornerRadius="@dimen/radius_pill"
+                            app:chipStrokeColor="@color/glass_border"
+                            app:chipStrokeWidth="1dp" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipEmotionNight"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/plus_jakarta_sans"
+                            android:text="@string/emotion_night"
+                            android:textColor="@color/text_primary"
+                            app:chipBackgroundColor="@color/surface_container_high"
+                            app:chipCornerRadius="@dimen/radius_pill"
+                            app:chipStrokeColor="@color/glass_border"
+                            app:chipStrokeWidth="1dp" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipEmotionFomo"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/plus_jakarta_sans"
+                            android:text="@string/emotion_fomo"
+                            android:textColor="@color/text_primary"
+                            app:chipBackgroundColor="@color/surface_container_high"
+                            app:chipCornerRadius="@dimen/radius_pill"
+                            app:chipStrokeColor="@color/glass_border"
+                            app:chipStrokeWidth="1dp" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipEmotionReward"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/plus_jakarta_sans"
+                            android:text="@string/emotion_reward"
+                            android:textColor="@color/text_primary"
+                            app:chipBackgroundColor="@color/surface_container_high"
+                            app:chipCornerRadius="@dimen/radius_pill"
+                            app:chipStrokeColor="@color/glass_border"
+                            app:chipStrokeWidth="1dp" />
+
+                    </com.google.android.material.chip.ChipGroup>
+                </HorizontalScrollView>
+
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"

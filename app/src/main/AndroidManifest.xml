@@ -56,11 +56,6 @@
             android:label="Settings" />
 
         <activity
-            android:name=".ui.WebViewActivity"
-            android:exported="false"
-            android:label="Merchant Store" />
-
-        <activity
             android:name="com.project.norushcart.ui.CheckoutWebViewActivity"
             android:exported="false"
             android:label="Merchant Store" />

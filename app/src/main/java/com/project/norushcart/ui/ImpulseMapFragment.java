@@ -42,14 +42,22 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import android.graphics.Color;
+import com.google.android.gms.maps.model.TileOverlay;
+import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.maps.android.heatmaps.Gradient;
+import com.google.maps.android.heatmaps.HeatmapTileProvider;
+import com.project.norushcart.location.NearbyStoresHelper;
+
 public class ImpulseMapFragment extends Fragment implements OnMapReadyCallback {
 
     public enum FilterMode {
-        ALL, NIGHT, DAY, THIS_WEEK, STORES
+        ALL, NIGHT, DAY, THIS_WEEK, STORES, HEATMAP
     }
 
     private GoogleMap googleMap;
     private ClusterManager<ImpulseClusterItem> clusterManager;
+    private TileOverlay heatmapTileOverlay;
     private List<ProductItem> allGeotaggedItems = new ArrayList<>();
     private List<NearbyStore> nearbyStores = new ArrayList<>();
     private List<Marker> storeMarkers = new ArrayList<>();
@@ -89,9 +97,18 @@ public class ImpulseMapFragment extends Fragment implements OnMapReadyCallback {
             startActivity(new Intent(requireContext(), SettingsActivity.class));
         });
 
+        MaterialButton btnGenerateSampleHotspots = view.findViewById(R.id.btnGenerateSampleHotspots);
+        if (btnGenerateSampleHotspots != null) {
+            btnGenerateSampleHotspots.setOnClickListener(v -> {
+                HapticHelper.confirm(v);
+                generateSampleHotspots();
+            });
+        }
+
         chipGroupFilters = view.findViewById(R.id.chipGroupMapFilters);
         chipGroupFilters.setOnCheckedStateChangeListener((group, checkedIds) -> {
             if (checkedIds.isEmpty()) return;
+            HapticHelper.tick(group);
             int checkedId = checkedIds.get(0);
             if (checkedId == R.id.chipFilterAll) {
                 currentFilter = FilterMode.ALL;
@@ -103,6 +120,8 @@ public class ImpulseMapFragment extends Fragment implements OnMapReadyCallback {
                 currentFilter = FilterMode.THIS_WEEK;
             } else if (checkedId == R.id.chipFilterStores) {
                 currentFilter = FilterMode.STORES;
+            } else if (checkedId == R.id.chipFilterHeatmap) {
+                currentFilter = FilterMode.HEATMAP;
             }
             applyFilterAndCluster();
         });
@@ -130,6 +149,15 @@ public class ImpulseMapFragment extends Fragment implements OnMapReadyCallback {
             googleMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.map_style_dark)
             );
+        } catch (Exception ignored) {
+        }
+
+        // Viewport padding so UI overlays (chips & bottom bar) don't cover map controls / attribution
+        try {
+            float density = getResources().getDisplayMetrics().density;
+            int topPadding = (int) (64 * density);
+            int bottomPadding = (int) (76 * density);
+            googleMap.setPadding(0, topPadding, 0, bottomPadding);
         } catch (Exception ignored) {
         }
 
@@ -217,6 +245,52 @@ public class ImpulseMapFragment extends Fragment implements OnMapReadyCallback {
             return;
         }
 
+        // Remove any existing heatmap overlay
+        if (heatmapTileOverlay != null) {
+            heatmapTileOverlay.remove();
+            heatmapTileOverlay = null;
+        }
+
+        if (currentFilter == FilterMode.HEATMAP) {
+            // Render Density Heatmap Layer
+            clusterManager.clearItems();
+            clusterManager.cluster();
+
+            List<LatLng> points = new ArrayList<>();
+            for (ProductItem item : allGeotaggedItems) {
+                if (item.hasLocation()) {
+                    points.add(new LatLng(item.getLatitudeSafe(), item.getLongitudeSafe()));
+                }
+            }
+
+            if (!points.isEmpty()) {
+                int[] colors = {
+                        Color.argb(0, 9, 4, 34),       // Transparent base
+                        Color.rgb(59, 130, 246),       // Azure (light impulse)
+                        Color.rgb(0, 240, 255),        // Electric Cyan (moderate)
+                        Color.rgb(245, 158, 11),       // Amber Solar (high)
+                        Color.rgb(236, 72, 153)        // Electric Fuchsia (hotspot)
+                };
+                float[] startPoints = {0.0f, 0.25f, 0.5f, 0.75f, 1.0f};
+                Gradient gradient = new Gradient(colors, startPoints);
+
+                HeatmapTileProvider provider = new HeatmapTileProvider.Builder()
+                        .data(points)
+                        .gradient(gradient)
+                        .radius(42)
+                        .build();
+
+                heatmapTileOverlay = googleMap.addTileOverlay(new TileOverlayOptions().tileProvider(provider));
+                autoFitCamera(allGeotaggedItems);
+            }
+
+            cardMapEmptyState.setVisibility(allGeotaggedItems.isEmpty() ? View.VISIBLE : View.GONE);
+            cardMapSummary.setVisibility(allGeotaggedItems.isEmpty() ? View.GONE : View.VISIBLE);
+            tvMapSummaryCount.setText("🔥 " + points.size() + " urge points mapped");
+            tvMapSummaryInsight.setText("Density Heatmap reveals high-frequency impulse hotspots. Bright fuchsia indicates repeated urge triggers.");
+            return;
+        }
+
         clusterManager.clearItems();
 
         List<ProductItem> filteredList = new ArrayList<>();
@@ -293,7 +367,8 @@ public class ImpulseMapFragment extends Fragment implements OnMapReadyCallback {
                     .position(pos)
                     .title(store.getName())
                     .snippet(store.getFormattedDistance() + " · " + store.getOpenStatusText())
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+                    .icon(MapMarkerHelper.getStoreMarker(requireContext()))
+                    .anchor(0.5f, 0.5f));
 
             if (marker != null) {
                 marker.setTag(store);
@@ -342,13 +417,102 @@ public class ImpulseMapFragment extends Fragment implements OnMapReadyCallback {
         tvMapSummaryCount.setText(filteredList.size() + " triggers · " + format.format(totalFilteredAmount));
 
         if (!allGeotaggedItems.isEmpty()) {
-            int pctNight = Math.round((lateNightCount * 100f) / allGeotaggedItems.size());
-            if (pctNight > 40) {
-                tvMapSummaryInsight.setText("🌙 " + pctNight + "% of your spending impulses strike late night (10PM–5AM).");
+            if (!NearbyStoresHelper.hasValidApiKey()) {
+                tvMapSummaryInsight.setText("⚠️ Live map tiles require Google Maps API Key in local.properties. Tap here for Package & SHA-1 setup guide.");
+                cardMapSummary.setOnClickListener(v -> showMapsKeyInstructionsDialog());
             } else {
-                tvMapSummaryInsight.setText("📍 Hotspots mapped. Pausing purchases gives your mind space to decide.");
+                cardMapSummary.setOnClickListener(null);
+                int pctNight = Math.round((lateNightCount * 100f) / allGeotaggedItems.size());
+                if (pctNight > 40) {
+                    tvMapSummaryInsight.setText("🌙 " + pctNight + "% of your spending impulses strike late night (10PM–5AM).");
+                } else {
+                    tvMapSummaryInsight.setText("📍 Hotspots mapped. Pausing purchases gives your mind space to decide.");
+                }
             }
         }
+    }
+
+    private void showMapsKeyInstructionsDialog() {
+        String pkg = requireContext().getPackageName();
+        String sha1 = "84:C6:5F:4A:92:CC:9E:B7:E9:2C:60:3E:FF:BC:01:07:E5:FD:58:8E";
+        String message = "To enable live Google Maps satellite/street tiles:\n\n"
+                + "1. Go to Google Cloud Console (console.cloud.google.com)\n"
+                + "2. Enable 'Maps SDK for Android' and 'Places API (New)'\n"
+                + "3. Create an API Key with Android restriction:\n"
+                + "   • Package: " + pkg + "\n"
+                + "   • SHA-1: " + sha1 + "\n\n"
+                + "4. Paste your key in local.properties:\n"
+                + "   MAPS_API_KEY=AIzaSy...\n\n"
+                + "5. Re-run the app!";
+
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("Google Maps Setup Instructions")
+                .setMessage(message)
+                .setPositiveButton("Copy Config", (dialog, which) -> {
+                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager)
+                            requireContext().getSystemService(android.content.Context.CLIPBOARD_SERVICE);
+                    android.content.ClipData clip = android.content.ClipData.newPlainText(
+                            "Google Maps Config", "Package: " + pkg + "\nSHA-1: " + sha1);
+                    if (clipboard != null) clipboard.setPrimaryClip(clip);
+                    android.widget.Toast.makeText(requireContext(), "Copied to clipboard!", android.widget.Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Close", null)
+                .show();
+    }
+
+    private void generateSampleHotspots() {
+        DatabaseHelper db = DatabaseHelper.getInstance(requireContext());
+        long now = System.currentTimeMillis();
+
+        // 1. Late-night trigger (Fuchsia pin)
+        ProductItem item1 = new ProductItem(
+                "Sony WH-1000XM5 Wireless Headphones",
+                "https://images.unsplash.com/photo-1505740420928-5e560c06d30e",
+                29990.0,
+                "Amazon",
+                "https://www.amazon.in/dp/B09XS7JWHH"
+        );
+        item1.setTimestampAdded(now - (3600L * 1000L * 2));
+        item1.setUnlockTimestamp(now + 160000000L);
+        item1.setStatus(ProductItem.STATUS_LOCKED);
+        item1.setLatitude(19.0760);
+        item1.setLongitude(72.8777);
+        item1.setPlaceLabel("Bed / Bedroom");
+        db.insertItem(item1);
+
+        // 2. Daytime trigger (Cyan pin)
+        ProductItem item2 = new ProductItem(
+                "Apple Watch Series 9 GPS 45mm",
+                "https://images.unsplash.com/photo-1523275335684-37898b6baf30",
+                44900.0,
+                "Flipkart",
+                "https://dl.flipkart.com/s/sample2"
+        );
+        item2.setTimestampAdded(now - (3600L * 1000L * 24));
+        item2.setUnlockTimestamp(now + 80000000L);
+        item2.setStatus(ProductItem.STATUS_LOCKED);
+        item2.setLatitude(19.0825);
+        item2.setLongitude(72.8850);
+        item2.setPlaceLabel("Work Desk / Office");
+        db.insertItem(item2);
+
+        // 3. Ready to Decide item (Mint Green pin)
+        ProductItem item3 = new ProductItem(
+                "Nike Air Max 270 React Sneakers",
+                "https://images.unsplash.com/photo-1542291026-7eec264c27ff",
+                12495.0,
+                "Amazon",
+                "https://www.amazon.in/dp/B07P8Z4ZJ6"
+        );
+        item3.setTimestampAdded(now - (3600L * 1000L * 50));
+        item3.setUnlockTimestamp(now - (3600L * 1000L * 2));
+        item3.setStatus(ProductItem.STATUS_UNLOCKED);
+        item3.setLatitude(19.0680);
+        item3.setLongitude(72.8690);
+        item3.setPlaceLabel("Coffee Shop");
+        db.insertItem(item3);
+
+        loadItemsAndRender();
     }
 
     private void autoFitCamera(List<ProductItem> items) {
@@ -385,32 +549,29 @@ public class ImpulseMapFragment extends Fragment implements OnMapReadyCallback {
         fragment.show(getChildFragmentManager(), "StoreBottomSheet");
     }
 
-    // Custom Cluster Renderer with time-of-day tinted markers
+    // Custom Cluster Renderer with theme-matched vector pins and cluster discs
     private static class ImpulseClusterRenderer extends DefaultClusterRenderer<ImpulseClusterItem> {
+        private final android.content.Context ctx;
 
         public ImpulseClusterRenderer(android.content.Context context, GoogleMap map, ClusterManager<ImpulseClusterItem> clusterManager) {
             super(context, map, clusterManager);
+            this.ctx = context;
         }
 
         @Override
         protected void onBeforeClusterItemRendered(@NonNull ImpulseClusterItem item, @NonNull MarkerOptions markerOptions) {
-            float hue;
-            if (item.isLateNight()) {
-                hue = BitmapDescriptorFactory.HUE_ROSE; // Fuchsia/Pink for late-night triggers
-            } else if (ProductItem.STATUS_UNLOCKED.equals(item.getItem().getStatus())) {
-                hue = BitmapDescriptorFactory.HUE_GREEN; // Mint green for ready items
-            } else {
-                hue = BitmapDescriptorFactory.HUE_CYAN; // Cyan for daytime triggers
-            }
-
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(hue))
+            boolean isLateNight = item.isLateNight();
+            boolean isUnlocked = ProductItem.STATUS_UNLOCKED.equals(item.getItem().getStatus());
+            markerOptions.icon(MapMarkerHelper.getHotspotMarker(ctx, isLateNight, isUnlocked))
                     .title(item.getTitle())
-                    .snippet(item.getSnippet());
+                    .snippet(item.getSnippet())
+                    .anchor(0.5f, 0.5f);
         }
 
         @Override
         protected void onBeforeClusterRendered(@NonNull Cluster<ImpulseClusterItem> cluster, @NonNull MarkerOptions markerOptions) {
-            super.onBeforeClusterRendered(cluster, markerOptions);
+            markerOptions.icon(MapMarkerHelper.getClusterMarker(ctx, cluster.getSize()))
+                    .anchor(0.5f, 0.5f);
         }
     }
 }

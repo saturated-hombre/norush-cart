@@ -38,6 +38,8 @@ public class ShareReceiverActivity extends AppCompatActivity {
     private TextView tvLocationChip;
     private View layoutLocationChip;
     private ShapeableImageView ivProductImage;
+    private TextView tvHoursOfLife;
+    private com.google.android.material.chip.ChipGroup chipGroupEmotions;
     private MaterialButton btnDone;
     private ImageView btnCloseSheet;
 
@@ -97,11 +99,27 @@ public class ShareReceiverActivity extends AppCompatActivity {
         tvLocationChip = findViewById(R.id.tvLocationChip);
         layoutLocationChip = findViewById(R.id.layoutLocationChip);
         ivProductImage = findViewById(R.id.ivProductImage);
+        tvHoursOfLife = findViewById(R.id.tvHoursOfLife);
+        chipGroupEmotions = findViewById(R.id.chipGroupEmotions);
         btnDone = findViewById(R.id.btnDone);
         btnCloseSheet = findViewById(R.id.btnCloseSheet);
 
-        btnCloseSheet.setOnClickListener(v -> finish());
-        btnDone.setOnClickListener(v -> finish());
+        if (chipGroupEmotions != null) {
+            chipGroupEmotions.setOnCheckedStateChangeListener((group, checkedIds) -> {
+                if (!checkedIds.isEmpty()) {
+                    HapticHelper.tick(group);
+                }
+            });
+        }
+
+        btnCloseSheet.setOnClickListener(v -> {
+            HapticHelper.tick(v);
+            finish();
+        });
+        btnDone.setOnClickListener(v -> {
+            HapticHelper.confirm(v);
+            finish();
+        });
     }
 
     private void startParallelProcessing(String rawContent) {
@@ -183,6 +201,21 @@ public class ShareReceiverActivity extends AppCompatActivity {
         tvRetailer.setText(item.getSourcePlatform() != null ? item.getSourcePlatform() : "Online Store");
         tvProductTitle.setText(item.getTitle());
         tvProductPrice.setText(item.getFormattedPrice());
+
+        // Tactile sensation upon successful quarantine
+        HapticHelper.confirm(layoutContent);
+
+        // Calculate "Cost in Hours of Life" if user set an hourly wage
+        android.content.SharedPreferences prefs = getSharedPreferences(LocationHelper.PREFS_NAME, MODE_PRIVATE);
+        float hourlyWage = prefs.getFloat("hourly_wage", 0f);
+        if (hourlyWage > 0 && item.getPrice() > 0 && tvHoursOfLife != null) {
+            double hours = item.getPrice() / hourlyWage;
+            String formattedHours = String.format(java.util.Locale.getDefault(), "%.1f", hours);
+            tvHoursOfLife.setText("⏱️ Cost: ~" + formattedHours + " hours of your hard work. Still worth it?");
+            tvHoursOfLife.setVisibility(View.VISIBLE);
+        } else if (tvHoursOfLife != null) {
+            tvHoursOfLife.setVisibility(View.GONE);
+        }
 
         if (BuildConfig.COOLDOWN_MINUTES_DEBUG <= 2) {
             tvLockChip.setText("⚡ Locked for 2 minutes (Debug)");

@@ -177,6 +177,112 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Section: Mindful Economics (Hours of Life) -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/settings_wage_section"
+                android:textAppearance="@style/TextAppearance.NoRushCart.LabelMd"
+                android:textColor="@color/primary" />
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.NoRushCart.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:id="@+id/rowHourlyWage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/settings_hourly_wage"
+                            android:textAppearance="@style/TextAppearance.NoRushCart.TitleMd"
+                            android:textColor="@color/text_primary" />
+
+                        <TextView
+                            android:id="@+id/tvHourlyWageSubtitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="@string/settings_hourly_wage_desc"
+                            android:textAppearance="@style/TextAppearance.NoRushCart.BodySm"
+                            android:textColor="@color/text_secondary" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvCurrentHourlyWage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:text="Not set"
+                        android:textAppearance="@style/TextAppearance.NoRushCart.LabelMd"
+                        android:textColor="@color/primary_light" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/text_tertiary" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Section: Google Maps Configuration -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/settings_maps_section"
+                android:textAppearance="@style/TextAppearance.NoRushCart.LabelMd"
+                android:textColor="@color/primary" />
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.NoRushCart.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/tvMapsKeyStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_maps_status_configured"
+                        android:textAppearance="@style/TextAppearance.NoRushCart.TitleMd"
+                        android:textColor="@color/status_unlocked" />
+
+                    <TextView
+                        android:id="@+id/tvMapsPackageInfo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Package: com.miniproject.myapplication"
+                        android:textAppearance="@style/TextAppearance.NoRushCart.BodySm"
+                        android:textColor="@color/text_secondary" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- Section 2: Quarantine Policy -->
             <TextView
                 android:layout_width="wrap_content"

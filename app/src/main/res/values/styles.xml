@@ -55,6 +55,7 @@
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">36sp</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:fontFeatureSettings">tnum</item>
     </style>
 
     <style name="TextAppearance.NoRushCart.HeadlineMd" parent="TextAppearance.Material3.HeadlineMedium">
@@ -62,6 +63,7 @@
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">22sp</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:fontFeatureSettings">tnum</item>
     </style>
 
     <style name="TextAppearance.NoRushCart.TitleLg" parent="TextAppearance.Material3.TitleLarge">
@@ -69,6 +71,7 @@
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">18sp</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:fontFeatureSettings">tnum</item>
     </style>
 
     <style name="TextAppearance.NoRushCart.TitleMd" parent="TextAppearance.Material3.TitleMedium">
@@ -102,5 +105,6 @@
         <item name="android:textSize">10sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">0.06</item>
+        <item name="android:fontFeatureSettings">tnum</item>
     </style>
 </resources>

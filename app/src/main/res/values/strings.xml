@@ -90,6 +90,23 @@
     <string name="store_search_searching">Searching nearby stores…</string>
     <string name="store_search_disabled_msg">Nearby store search is turned off in Settings. Enable \"Find nearby stores\" to search local retailers.</string>
 
+    <!-- Modern Mindful Economics & Maps Additions -->
+    <string name="map_filter_heatmap">🔥 Heatmap</string>
+    <string name="map_api_key_missing_title">Google Maps Key Needed</string>
+    <string name="map_api_key_missing_desc">Set MAPS_API_KEY in local.properties to enable live maps.\nPackage: %1$s</string>
+    <string name="settings_wage_section">Mindful Economics</string>
+    <string name="settings_hourly_wage">Hourly Work Value</string>
+    <string name="settings_hourly_wage_desc">Calculate impulse costs in \"Hours of Life\" work time</string>
+    <string name="settings_maps_section">Google Maps Platform</string>
+    <string name="settings_maps_status_configured">API Key Active (Ready)</string>
+    <string name="settings_maps_status_missing">API Key Missing (Setup required)</string>
+    <string name="emotion_bored">🥱 Bored</string>
+    <string name="emotion_stressed">😫 Stressed</string>
+    <string name="emotion_night">🌙 Late Night</string>
+    <string name="emotion_fomo">🏷️ FOMO</string>
+    <string name="emotion_reward">🎁 Reward</string>
+    <string name="emotion_prompt">Why do you feel this urge right now?</string>
+
     <!-- Dialogs & General -->
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_clear">Clear</string>

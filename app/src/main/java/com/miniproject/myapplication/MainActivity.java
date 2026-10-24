@@ -27,8 +27,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.miniproject.myapplication.database.DatabaseHelper;
-import com.miniproject.myapplication.ui.ProductAdapter;
-import com.miniproject.myapplication.ui.WebViewActivity;
 import com.project.norushcart.data.ProductItem;
 import com.project.norushcart.service.SchedulerHelper;
 import com.project.norushcart.ui.CheckoutWebViewActivity;
@@ -91,6 +89,15 @@ public class MainActivity extends AppCompatActivity implements CooldownAdapter.O
         Toolbar toolbar = findViewById(R.id.toolbarMain);
         setSupportActionBar(toolbar);
 
+        // Modern Edge-to-Edge window handling with dynamic insets
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, windowInsets) -> {
+            androidx.core.graphics.Insets insets = windowInsets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars());
+            findViewById(R.id.toolbarMain).setPadding(0, insets.top, 0, 0);
+            bottomNavigation.setPadding(0, 0, 0, insets.bottom);
+            return windowInsets;
+        });
+
         dbHelper = DatabaseHelper.getInstance(this);
 
         containerCoolingDown = findViewById(R.id.containerCoolingDown);
@@ -109,6 +116,11 @@ public class MainActivity extends AppCompatActivity implements CooldownAdapter.O
         tvTotalMoneySaved = findViewById(R.id.tvTotalMoneySaved);
         tvDiscardedCount = findViewById(R.id.tvDiscardedCount);
         chartWeeklySavings = findViewById(R.id.chartWeeklySavings);
+
+        View cardDreamGoal = findViewById(R.id.cardDreamGoal);
+        if (cardDreamGoal != null) {
+            cardDreamGoal.setOnClickListener(v -> showEditDreamGoalDialog());
+        }
 
         bottomNavigation = findViewById(R.id.bottomNavigation);
 
@@ -130,7 +142,12 @@ public class MainActivity extends AppCompatActivity implements CooldownAdapter.O
         timerRunnable = new Runnable() {
             @Override
             public void run() {
-                refreshData();
+                if (adapterCoolingDown != null) {
+                    adapterCoolingDown.tickVisibleCountdowns(rvCoolingDown);
+                    if (adapterCoolingDown.hasAnyExpired()) {
+                        refreshData();
+                    }
+                }
                 timerHandler.postDelayed(this, 1000);
             }
         };
@@ -155,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements CooldownAdapter.O
     private void setupBottomNavigation() {
         bottomNavigation.setOnItemSelectedListener(item -> {
             if (isNavigating) return true;
+            com.project.norushcart.ui.HapticHelper.tick(bottomNavigation);
             int itemId = item.getItemId();
             if (itemId == R.id.navigation_cooling_down) {
                 updateTabVisibility(0);
@@ -259,6 +277,78 @@ public class MainActivity extends AppCompatActivity implements CooldownAdapter.O
         if (chartWeeklySavings != null) {
             chartWeeklySavings.setWeeklyData(weeklyBars);
         }
+
+        // Update Dream Goal progress
+        updateDreamGoalProgress(totalSaved);
+    }
+
+    private void updateDreamGoalProgress(double totalSaved) {
+        View cardDreamGoal = findViewById(R.id.cardDreamGoal);
+        if (cardDreamGoal == null) return;
+
+        android.content.SharedPreferences prefs = getSharedPreferences(com.project.norushcart.location.LocationHelper.PREFS_NAME, MODE_PRIVATE);
+        String goalTitle = prefs.getString("dream_goal_title", "");
+        float goalTarget = prefs.getFloat("dream_goal_target", 0f);
+
+        TextView tvTitle = findViewById(R.id.tvDreamGoalTitle);
+        TextView tvPercent = findViewById(R.id.tvDreamGoalPercent);
+        com.google.android.material.progressindicator.LinearProgressIndicator progress = findViewById(R.id.progressDreamGoal);
+        TextView tvSubtitle = findViewById(R.id.tvDreamGoalSubtitle);
+
+        NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("en", "IN"));
+
+        if (goalTarget > 0 && !goalTitle.isEmpty()) {
+            int pct = Math.min(100, (int) Math.round((totalSaved / goalTarget) * 100));
+            tvTitle.setText("🎯 Goal: " + goalTitle);
+            tvPercent.setText(pct + "%");
+            progress.setProgress(pct);
+            tvSubtitle.setText(format.format(totalSaved) + " / " + format.format(goalTarget) + " saved towards your goal");
+        } else {
+            tvTitle.setText("🎯 Set a Dream Purchase Goal");
+            tvPercent.setText("0%");
+            progress.setProgress(0);
+            tvSubtitle.setText("Tap to allocate your impulse savings toward something you truly love!");
+        }
+    }
+
+    private void showEditDreamGoalDialog() {
+        android.content.SharedPreferences prefs = getSharedPreferences(com.project.norushcart.location.LocationHelper.PREFS_NAME, MODE_PRIVATE);
+        String currentTitle = prefs.getString("dream_goal_title", "");
+        float currentTarget = prefs.getFloat("dream_goal_target", 0f);
+
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(60, 20, 60, 20);
+
+        EditText etTitle = new EditText(this);
+        etTitle.setHint("Goal name (e.g., Japan Trip, Gaming PC)");
+        if (!currentTitle.isEmpty()) etTitle.setText(currentTitle);
+        layout.addView(etTitle);
+
+        EditText etTarget = new EditText(this);
+        etTarget.setHint("Target Amount (₹)");
+        etTarget.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        if (currentTarget > 0) etTarget.setText(String.valueOf((int) currentTarget));
+        layout.addView(etTarget);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Your Dream Savings Goal")
+                .setMessage("Every impulse buy you resist helps fund this meaningful goal:")
+                .setView(layout)
+                .setPositiveButton("Save Goal", (dialog, which) -> {
+                    String title = etTitle.getText().toString().trim();
+                    String targetStr = etTarget.getText().toString().trim();
+                    if (!title.isEmpty() && !targetStr.isEmpty()) {
+                        try {
+                            float target = Float.parseFloat(targetStr);
+                            prefs.edit().putString("dream_goal_title", title).putFloat("dream_goal_target", target).apply();
+                            com.project.norushcart.ui.HapticHelper.confirm(findViewById(android.R.id.content));
+                            refreshData();
+                        } catch (NumberFormatException ignored) {}
+                    }
+                })
+                .setNegativeButton(R.string.dialog_cancel, null)
+                .show();
     }
 
 
@@ -327,6 +417,7 @@ public class MainActivity extends AppCompatActivity implements CooldownAdapter.O
         refreshData();
         View rootView = findViewById(android.R.id.content);
         if (rootView != null) {
+            com.project.norushcart.ui.HapticHelper.confirm(rootView);
             Snackbar.make(rootView, "🎉 Item discarded! You saved " + item.getFormattedPrice() + "!", Snackbar.LENGTH_LONG).show();
         }
     }
