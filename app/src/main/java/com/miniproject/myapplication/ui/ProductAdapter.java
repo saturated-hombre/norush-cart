@@ -91,8 +91,15 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
             // Image loading via Glide
             if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
+                com.bumptech.glide.load.model.GlideUrl glideUrl = new com.bumptech.glide.load.model.GlideUrl(
+                        item.getImageUrl(),
+                        new com.bumptech.glide.load.model.LazyHeaders.Builder()
+                                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
+                                .build()
+                );
+
                 Glide.with(context)
-                        .load(item.getImageUrl())
+                        .load(glideUrl)
                         .placeholder(R.drawable.ic_launcher_background)
                         .error(R.drawable.ic_launcher_foreground)
                         .into(ivProductImage);

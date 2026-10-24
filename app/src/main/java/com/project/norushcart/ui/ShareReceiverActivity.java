@@ -202,11 +202,20 @@ public class ShareReceiverActivity extends AppCompatActivity {
         }
 
         if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
+            com.bumptech.glide.load.model.GlideUrl glideUrl = new com.bumptech.glide.load.model.GlideUrl(
+                    item.getImageUrl(),
+                    new com.bumptech.glide.load.model.LazyHeaders.Builder()
+                            .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
+                            .build()
+            );
+
             Glide.with(this)
-                    .load(item.getImageUrl())
-                    .placeholder(R.drawable.bg_privacy_pill)
-                    .error(R.drawable.bg_privacy_pill)
+                    .load(glideUrl)
+                    .placeholder(R.drawable.ic_launcher_background)
+                    .error(R.drawable.ic_launcher_background)
                     .into(ivProductImage);
+        } else {
+            ivProductImage.setImageResource(R.drawable.ic_launcher_background);
         }
     }
 

@@ -22,7 +22,7 @@ public class LocationHelper {
     public static final String KEY_TRACK_LOCATION = "track_location";
     public static final String KEY_ONBOARDING_COMPLETED = "onboarding_completed";
 
-    private static final long TIMEOUT_MS = 2000L;
+    private static final long TIMEOUT_MS = 5000L;
 
     public interface LocationResultCallback {
         void onLocationResult(@Nullable Double latitude, @Nullable Double longitude, @Nullable Float accuracy);
@@ -65,7 +65,7 @@ public class LocationHelper {
         CancellationTokenSource cts = new CancellationTokenSource();
         boolean[] completed = new boolean[]{false};
 
-        // Enforce 2000ms timeout
+        // Enforce 5000ms timeout
         Runnable timeoutRunnable = () -> {
             synchronized (completed) {
                 if (completed[0]) return;
@@ -77,7 +77,7 @@ public class LocationHelper {
         mainHandler.postDelayed(timeoutRunnable, TIMEOUT_MS);
 
         try {
-            client.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, cts.getToken())
+            client.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cts.getToken())
                     .addOnSuccessListener(location -> {
                         mainHandler.removeCallbacks(timeoutRunnable);
                         synchronized (completed) {
@@ -160,7 +160,7 @@ public class LocationHelper {
         mainHandler.postDelayed(timeoutRunnable, TIMEOUT_MS);
 
         try {
-            client.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, cts.getToken())
+            client.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cts.getToken())
                     .addOnSuccessListener(loc -> {
                         synchronized (completed) {
                             if (completed[0]) return;

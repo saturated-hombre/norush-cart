@@ -3,6 +3,11 @@ plugins {
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
+secrets {
+    propertiesFileName = "local.properties"
+    defaultPropertiesFileName = "local.defaults.properties"
+}
+
 android {
     namespace = "com.miniproject.myapplication"
     compileSdk = 35

@@ -171,11 +171,13 @@ public class ImpulseMapFragment extends Fragment implements OnMapReadyCallback {
         if (LocationHelper.hasLocationPermission(requireContext())) {
             try {
                 googleMap.setMyLocationEnabled(true);
+                googleMap.getUiSettings().setMyLocationButtonEnabled(true);
             } catch (SecurityException ignored) {
             }
         }
 
         loadItemsAndRender();
+        centerOnUserLocation();
     }
 
     public void displayNearbyStores(@NonNull List<NearbyStore> stores, @NonNull String query) {
@@ -351,8 +353,24 @@ public class ImpulseMapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    private void centerOnUserLocation() {
+        if (googleMap == null || !isAdded()) return;
+        LocationHelper.fetchCurrentLocation(requireContext(), (lat, lng, accuracy) -> {
+            if (!isAdded() || googleMap == null) return;
+            if (lat != null && lng != null) {
+                LatLng userPos = new LatLng(lat, lng);
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userPos, 14f));
+            }
+        });
+    }
+
     private void autoFitCamera(List<ProductItem> items) {
-        if (googleMap == null || items.isEmpty()) return;
+        if (googleMap == null) return;
+
+        if (items.isEmpty()) {
+            centerOnUserLocation();
+            return;
+        }
 
         if (items.size() == 1) {
             ProductItem single = items.get(0);
