@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -66,6 +68,31 @@ public class ImpulseMapFragment extends Fragment implements OnMapReadyCallback {
     private TextView tvMapEmptyDesc;
     private MaterialButton btnMapEmptyAction;
 
+    private final ActivityResultLauncher<String[]> locationPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
+                boolean fineGranted = Boolean.TRUE.equals(result.get(Manifest.permission.ACCESS_FINE_LOCATION));
+                boolean coarseGranted = Boolean.TRUE.equals(result.get(Manifest.permission.ACCESS_COARSE_LOCATION));
+                if (fineGranted || coarseGranted) {
+                    if (isAdded()) {
+                        LocationHelper.setLocationTrackingEnabled(requireContext(), true);
+                        if (googleMap != null) {
+                            try {
+                                googleMap.setMyLocationEnabled(true);
+                                googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+                            } catch (SecurityException ignored) {}
+                        }
+                        loadItemsAndRender();
+                        centerOnUserLocation();
+                    }
+                }
+            });
+
+    public void reloadMapData() {
+        if (isAdded() && googleMap != null) {
+            loadItemsAndRender();
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -86,8 +113,21 @@ public class ImpulseMapFragment extends Fragment implements OnMapReadyCallback {
         btnMapEmptyAction = view.findViewById(R.id.btnMapEmptyAction);
 
         btnMapEmptyAction.setOnClickListener(v -> {
-            startActivity(new Intent(requireContext(), SettingsActivity.class));
+            if (!LocationHelper.hasLocationPermission(requireContext())) {
+                locationPermissionLauncher.launch(new String[]{
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                });
+            } else {
+                startActivity(new Intent(requireContext(), SettingsActivity.class));
+            }
         });
+
+        android.widget.HorizontalScrollView scrollMapFilters = view.findViewById(R.id.scrollMapFilters);
+        if (scrollMapFilters != null) {
+            scrollMapFilters.setHorizontalScrollBarEnabled(false);
+            scrollMapFilters.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        }
 
         chipGroupFilters = view.findViewById(R.id.chipGroupMapFilters);
         chipGroupFilters.setOnCheckedStateChangeListener((group, checkedIds) -> {
@@ -171,7 +211,7 @@ public class ImpulseMapFragment extends Fragment implements OnMapReadyCallback {
         if (LocationHelper.hasLocationPermission(requireContext())) {
             try {
                 googleMap.setMyLocationEnabled(true);
-                googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+                googleMap.getUiSettings().setMyLocationButtonEnabled(false);
             } catch (SecurityException ignored) {
             }
         }

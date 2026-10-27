@@ -90,7 +90,28 @@ public class CheckoutWebViewActivity extends AppCompatActivity {
         webViewCheckout.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                return false; // Keep browsing inside app's WebView
+                if (request == null || request.getUrl() == null) return false;
+                String url = request.getUrl().toString();
+                if (url.startsWith("http://") || url.startsWith("https://")) {
+                    return false; // Load normal HTTP/HTTPS pages inside WebView
+                }
+                try {
+                    Intent intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
+                    if (intent != null) {
+                        try {
+                            startActivity(intent);
+                            return true;
+                        } catch (android.content.ActivityNotFoundException e) {
+                            String fallbackUrl = intent.getStringExtra("browser_fallback_url");
+                            if (fallbackUrl != null && !fallbackUrl.isEmpty()) {
+                                view.loadUrl(fallbackUrl);
+                                return true;
+                            }
+                        }
+                    }
+                } catch (Exception ignored) {
+                }
+                return true;
             }
 
             @Override
@@ -161,8 +182,11 @@ public class CheckoutWebViewActivity extends AppCompatActivity {
             finish();
             return true;
         } else if (item.getItemId() == 1) {
-            if (originalUrl != null) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(originalUrl));
+            String targetUrl = (webViewCheckout != null && webViewCheckout.getUrl() != null)
+                    ? webViewCheckout.getUrl()
+                    : originalUrl;
+            if (targetUrl != null && !targetUrl.isEmpty()) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(targetUrl));
                 startActivity(browserIntent);
             }
             return true;

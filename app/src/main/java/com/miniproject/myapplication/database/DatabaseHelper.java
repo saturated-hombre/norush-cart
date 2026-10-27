@@ -173,20 +173,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             checkAndAutoUnlockExpiredItems();
         }
 
-        Cursor cursor = db.query(
+        try (Cursor cursor = db.query(
                 TABLE_COOLDOWN,
                 null,
                 COLUMN_STATUS + " = ?",
                 new String[]{status},
                 null, null,
                 COLUMN_TIMESTAMP_ADDED + " DESC"
-        );
-
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                items.add(cursorToProductItem(cursor));
-            } while (cursor.moveToNext());
-            cursor.close();
+        )) {
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    items.add(cursorToProductItem(cursor));
+                } while (cursor.moveToNext());
+            }
         }
 
         return items;
@@ -196,20 +195,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<ProductItem> items = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(
+        try (Cursor cursor = db.query(
                 TABLE_COOLDOWN,
                 null,
                 null,
                 null,
                 null, null,
                 COLUMN_TIMESTAMP_ADDED + " DESC"
-        );
-
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                items.add(cursorToProductItem(cursor));
-            } while (cursor.moveToNext());
-            cursor.close();
+        )) {
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    items.add(cursorToProductItem(cursor));
+                } while (cursor.moveToNext());
+            }
         }
 
         return items;
@@ -220,23 +218,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String selection = COLUMN_LATITUDE + " IS NOT NULL AND " + COLUMN_LONGITUDE + " IS NOT NULL";
-        Cursor cursor = db.query(
+        try (Cursor cursor = db.query(
                 TABLE_COOLDOWN,
                 null,
                 selection,
                 null,
                 null, null,
                 COLUMN_TIMESTAMP_ADDED + " DESC"
-        );
-
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                ProductItem item = cursorToProductItem(cursor);
-                if (item.hasLocation()) {
-                    items.add(item);
-                }
-            } while (cursor.moveToNext());
-            cursor.close();
+        )) {
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    ProductItem item = cursorToProductItem(cursor);
+                    if (item.hasLocation()) {
+                        items.add(item);
+                    }
+                } while (cursor.moveToNext());
+            }
         }
 
         return items;
@@ -244,18 +241,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public ProductItem getItemById(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(
+        ProductItem item = null;
+        try (Cursor cursor = db.query(
                 TABLE_COOLDOWN,
                 null,
                 COLUMN_ID + " = ?",
                 new String[]{String.valueOf(id)},
                 null, null, null
-        );
-
-        ProductItem item = null;
-        if (cursor != null && cursor.moveToFirst()) {
-            item = cursorToProductItem(cursor);
-            cursor.close();
+        )) {
+            if (cursor != null && cursor.moveToFirst()) {
+                item = cursorToProductItem(cursor);
+            }
         }
         return item;
     }
@@ -264,6 +260,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_STATUS, newStatus);
+        db.update(TABLE_COOLDOWN, values, COLUMN_ID + " = ?", new String[]{String.valueOf(id)});
+    }
+
+    public void updateItemPrice(int id, double price) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_PRICE, price);
         db.update(TABLE_COOLDOWN, values, COLUMN_ID + " = ?", new String[]{String.valueOf(id)});
     }
 
@@ -284,10 +287,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         double total = 0.0;
         String query = "SELECT SUM(" + COLUMN_PRICE + ") FROM " + TABLE_COOLDOWN + " WHERE " + COLUMN_STATUS + " = ?";
-        Cursor cursor = db.rawQuery(query, new String[]{ProductItem.STATUS_DISCARDED});
-        if (cursor != null && cursor.moveToFirst()) {
-            total = cursor.getDouble(0);
-            cursor.close();
+        try (Cursor cursor = db.rawQuery(query, new String[]{ProductItem.STATUS_DISCARDED})) {
+            if (cursor != null && cursor.moveToFirst()) {
+                total = cursor.getDouble(0);
+            }
         }
         return total;
     }
@@ -296,10 +299,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         int count = 0;
         String query = "SELECT COUNT(*) FROM " + TABLE_COOLDOWN + " WHERE " + COLUMN_STATUS + " = ?";
-        Cursor cursor = db.rawQuery(query, new String[]{ProductItem.STATUS_DISCARDED});
-        if (cursor != null && cursor.moveToFirst()) {
-            count = cursor.getInt(0);
-            cursor.close();
+        try (Cursor cursor = db.rawQuery(query, new String[]{ProductItem.STATUS_DISCARDED})) {
+            if (cursor != null && cursor.moveToFirst()) {
+                count = cursor.getInt(0);
+            }
         }
         return count;
     }
@@ -309,10 +312,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         double total = 0.0;
         long sevenDaysAgo = System.currentTimeMillis() - (7L * 24L * 60L * 60L * 1000L);
         String query = "SELECT SUM(" + COLUMN_PRICE + ") FROM " + TABLE_COOLDOWN + " WHERE " + COLUMN_STATUS + " = ? AND " + COLUMN_TIMESTAMP_ADDED + " >= ?";
-        Cursor cursor = db.rawQuery(query, new String[]{ProductItem.STATUS_DISCARDED, String.valueOf(sevenDaysAgo)});
-        if (cursor != null && cursor.moveToFirst()) {
-            total = cursor.getDouble(0);
-            cursor.close();
+        try (Cursor cursor = db.rawQuery(query, new String[]{ProductItem.STATUS_DISCARDED, String.valueOf(sevenDaysAgo)})) {
+            if (cursor != null && cursor.moveToFirst()) {
+                total = cursor.getDouble(0);
+            }
         }
         return total;
     }
@@ -322,10 +325,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         int count = 0;
         long sevenDaysAgo = System.currentTimeMillis() - (7L * 24L * 60L * 60L * 1000L);
         String query = "SELECT COUNT(*) FROM " + TABLE_COOLDOWN + " WHERE " + COLUMN_STATUS + " = ? AND " + COLUMN_TIMESTAMP_ADDED + " >= ?";
-        Cursor cursor = db.rawQuery(query, new String[]{ProductItem.STATUS_DISCARDED, String.valueOf(sevenDaysAgo)});
-        if (cursor != null && cursor.moveToFirst()) {
-            count = cursor.getInt(0);
-            cursor.close();
+        try (Cursor cursor = db.rawQuery(query, new String[]{ProductItem.STATUS_DISCARDED, String.valueOf(sevenDaysAgo)})) {
+            if (cursor != null && cursor.moveToFirst()) {
+                count = cursor.getInt(0);
+            }
         }
         return count;
     }
@@ -334,19 +337,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<ProductItem> items = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         long sevenDaysAgo = System.currentTimeMillis() - (7L * 24L * 60L * 60L * 1000L);
-        Cursor cursor = db.query(
+        try (Cursor cursor = db.query(
                 TABLE_COOLDOWN,
                 null,
                 COLUMN_STATUS + " = ? AND " + COLUMN_TIMESTAMP_ADDED + " >= ?",
                 new String[]{ProductItem.STATUS_DISCARDED, String.valueOf(sevenDaysAgo)},
                 null, null,
                 COLUMN_TIMESTAMP_ADDED + " DESC"
-        );
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                items.add(cursorToProductItem(cursor));
-            } while (cursor.moveToNext());
-            cursor.close();
+        )) {
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    items.add(cursorToProductItem(cursor));
+                } while (cursor.moveToNext());
+            }
         }
         return items;
     }
@@ -387,18 +390,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         double latRounded = Math.round(lat * 1000.0) / 1000.0;
         double lngRounded = Math.round(lng * 1000.0) / 1000.0;
 
-        Cursor cursor = db.query(
+        String label = null;
+        try (Cursor cursor = db.query(
                 TABLE_PLACES,
                 new String[]{COLUMN_PLACE_LABEL_NAME},
                 COLUMN_PLACE_LAT_ROUNDED + " = ? AND " + COLUMN_PLACE_LNG_ROUNDED + " = ?",
                 new String[]{String.valueOf(latRounded), String.valueOf(lngRounded)},
                 null, null, null
-        );
-
-        String label = null;
-        if (cursor != null && cursor.moveToFirst()) {
-            label = cursor.getString(0);
-            cursor.close();
+        )) {
+            if (cursor != null && cursor.moveToFirst()) {
+                label = cursor.getString(0);
+            }
         }
         return label;
     }
@@ -477,17 +479,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public String getCachedNearbyStoresJson(int itemId) {
         SQLiteDatabase db = this.getReadableDatabase();
         long twentyFourHoursAgo = System.currentTimeMillis() - (24L * 60L * 60L * 1000L);
-        Cursor cursor = db.query(
+        String json = null;
+        try (Cursor cursor = db.query(
                 TABLE_NEARBY_STORES,
                 new String[]{COLUMN_STORE_JSON},
                 COLUMN_STORE_ITEM_ID + " = ? AND " + COLUMN_STORE_TIMESTAMP + " >= ?",
                 new String[]{String.valueOf(itemId), String.valueOf(twentyFourHoursAgo)},
                 null, null, null
-        );
-        String json = null;
-        if (cursor != null && cursor.moveToFirst()) {
-            json = cursor.getString(0);
-            cursor.close();
+        )) {
+            if (cursor != null && cursor.moveToFirst()) {
+                json = cursor.getString(0);
+            }
         }
         return json;
     }

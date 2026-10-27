@@ -12,11 +12,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 import com.miniproject.myapplication.R;
 import com.miniproject.myapplication.database.DatabaseHelper;
-import com.miniproject.myapplication.ui.WebViewActivity;
 import com.project.norushcart.data.ProductItem;
 
 import java.util.ArrayList;
@@ -97,17 +95,14 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         public void bind(ProductItem item, int position) {
             tvProductTitle.setText(item.getTitle());
             tvProductPrice.setText(item.getFormattedPrice());
+            tvProductPrice.setOnClickListener(v -> {
+                PriceDialogHelper.showEditPriceDialog(context, item, () -> {
+                    tvProductPrice.setText(item.getFormattedPrice());
+                });
+            });
             tvPlatformBadge.setText(item.getSourcePlatform() != null ? item.getSourcePlatform() : "Online Store");
 
-            if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
-                Glide.with(context)
-                        .load(item.getImageUrl())
-                        .placeholder(R.drawable.bg_privacy_pill)
-                        .error(R.drawable.bg_privacy_pill)
-                        .into(ivProductImage);
-            } else {
-                ivProductImage.setImageResource(R.drawable.bg_privacy_pill);
-            }
+            GlideHelper.loadProductImage(context, item.getImageUrl(), ivProductImage);
 
             if (item.hasLocation()) {
                 layoutLocationChipReview.setVisibility(View.VISIBLE);

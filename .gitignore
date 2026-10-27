@@ -1,13 +1,68 @@
-*.iml
-.gradle
-/local.properties
+# Built application files
+*.apk
+*.aar
+*.ap_
+*.aab
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+bin/
+gen/
+out/
+build/
+app/build/
+**/build/
+.gradle/
+
+# Gradle and IDE caches
 .idea/
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+*.iml
+.navigation/
+.qodo/
+
+# Keystores & Signing secrets
+*.jks
+*.keystore
+signing/
+release-keystore.properties
+
+# Local configuration file (sdk path, private api keys)
 local.properties
+/local.properties
+*.log
+*.hprof
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Android Studio / NDK / Profiler
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Scratch & temporary artifacts
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
+screen_current.png
+ss_*.png
+v_*.png
+test.png
+*.orig
+
+# Agent runtime files & locks
 .agents/
 skills-lock.json
-

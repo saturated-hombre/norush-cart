@@ -14,6 +14,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.view.LayoutInflater;
+import android.view.Window;
+import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -24,11 +30,11 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButton;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.miniproject.myapplication.database.DatabaseHelper;
-import com.miniproject.myapplication.ui.ProductAdapter;
-import com.miniproject.myapplication.ui.WebViewActivity;
 import com.project.norushcart.data.ProductItem;
 import com.project.norushcart.service.SchedulerHelper;
 import com.project.norushcart.ui.CheckoutWebViewActivity;
@@ -45,7 +51,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements CooldownAdapter.OnFastForwardListener, ReviewAdapter.OnReviewActionListener {
 
-    private static final int PERMISSION_REQUEST_NOTIFICATIONS = 101;
+    private static final int PERMISSION_REQUEST_ALL = 101;
 
     private View containerCoolingDown;
     private View containerReadyReview;
@@ -69,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements CooldownAdapter.O
     private CooldownAdapter adapterCoolingDown;
     private ReviewAdapter adapterReadyReview;
     private com.project.norushcart.ui.SavedAdapter adapterSavings;
+    private ImpulseMapFragment impulseMapFragment;
 
     private DatabaseHelper dbHelper;
     private Handler timerHandler;
@@ -117,11 +124,12 @@ public class MainActivity extends AppCompatActivity implements CooldownAdapter.O
 
 
         // Attach ImpulseMapFragment
+        impulseMapFragment = new ImpulseMapFragment();
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.containerMap, new ImpulseMapFragment())
+                .replace(R.id.containerMap, impulseMapFragment)
                 .commit();
 
-        checkNotificationPermission();
+        checkAppPermissions();
 
         int selectedTab = getIntent().getIntExtra("SELECT_TAB", 0);
         selectTab(selectedTab);
@@ -130,10 +138,38 @@ public class MainActivity extends AppCompatActivity implements CooldownAdapter.O
         timerRunnable = new Runnable() {
             @Override
             public void run() {
-                refreshData();
+                if (adapterCoolingDown != null) {
+                    List<ProductItem> items = adapterCoolingDown.getItems();
+                    int count = items.size();
+                    if (count > 0) {
+                        boolean hasExpiredItem = false;
+                        long now = System.currentTimeMillis();
+                        for (ProductItem item : items) {
+                            if (item.getUnlockTimestamp() <= now) {
+                                hasExpiredItem = true;
+                                break;
+                            }
+                        }
+                        if (hasExpiredItem) {
+                            refreshData();
+                        } else {
+                            adapterCoolingDown.notifyItemRangeChanged(0, count, "TICK");
+                        }
+                    }
+                }
                 timerHandler.postDelayed(this, 1000);
             }
         };
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        if (intent != null && intent.hasExtra("SELECT_TAB")) {
+            int selectedTab = intent.getIntExtra("SELECT_TAB", 0);
+            selectTab(selectedTab);
+        }
     }
 
     private void setupRecyclerViews() {
@@ -179,6 +215,9 @@ public class MainActivity extends AppCompatActivity implements CooldownAdapter.O
         containerMap.setVisibility(index == 2 ? View.VISIBLE : View.GONE);
         containerSavings.setVisibility(index == 3 ? View.VISIBLE : View.GONE);
         refreshData();
+        if (index == 2 && impulseMapFragment != null) {
+            impulseMapFragment.reloadMapData();
+        }
     }
 
     private void selectTab(int index) {
@@ -202,6 +241,9 @@ public class MainActivity extends AppCompatActivity implements CooldownAdapter.O
     protected void onResume() {
         super.onResume();
         refreshData();
+        if (impulseMapFragment != null) {
+            impulseMapFragment.reloadMapData();
+        }
         if (timerHandler != null) {
             timerHandler.removeCallbacks(timerRunnable);
             timerHandler.post(timerRunnable);
@@ -244,6 +286,7 @@ public class MainActivity extends AppCompatActivity implements CooldownAdapter.O
         List<com.project.norushcart.ui.WeeklySavingsChartView.BarData> weeklyBars = new ArrayList<>();
         long now = System.currentTimeMillis();
         long weekDurationMs = 7L * 24L * 60L * 60L * 1000L;
+        String[] weekLabels = {"5w ago", "4w ago", "3w ago", "2w ago", "Last Wk", "This Wk"};
         for (int i = 5; i >= 0; i--) {
             long windowEnd = now - (i * weekDurationMs);
             long windowStart = windowEnd - weekDurationMs;
@@ -254,7 +297,9 @@ public class MainActivity extends AppCompatActivity implements CooldownAdapter.O
                     weekSum += item.getPrice();
                 }
             }
-            weeklyBars.add(new com.project.norushcart.ui.WeeklySavingsChartView.BarData("W" + (6 - i), weekSum, i == 0));
+            int labelIndex = 5 - i;
+            String label = (labelIndex >= 0 && labelIndex < weekLabels.length) ? weekLabels[labelIndex] : ("W" + (6 - i));
+            weeklyBars.add(new com.project.norushcart.ui.WeeklySavingsChartView.BarData(label, weekSum, i == 0));
         }
         if (chartWeeklySavings != null) {
             chartWeeklySavings.setWeeklyData(weeklyBars);
@@ -287,27 +332,56 @@ public class MainActivity extends AppCompatActivity implements CooldownAdapter.O
 
 
     private void showAddLinkDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Intercept Product Link");
-        builder.setMessage("Paste an Amazon or Flipkart product URL to place it into the 48-hour quarantine queue:");
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_add_link, null);
+        dialog.setContentView(view);
 
-        final EditText input = new EditText(this);
-        input.setHint("https://www.amazon.in/dp/... or https://dl.flipkart.com/...");
-        builder.setView(input);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
+            params.width = (int) (getResources().getDisplayMetrics().widthPixels * 0.92);
+            dialog.getWindow().setAttributes(params);
+        }
 
-        builder.setPositiveButton("Quarantine 48h", (dialog, which) -> {
-            String url = input.getText().toString().trim();
+        final EditText etUrl = view.findViewById(R.id.etDialogUrl);
+        final EditText etPrice = view.findViewById(R.id.etDialogPrice);
+        final MaterialButton btnCancel = view.findViewById(R.id.btnDialogCancel);
+        final MaterialButton btnSubmit = view.findViewById(R.id.btnDialogSubmit);
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        btnSubmit.setOnClickListener(v -> {
+            String url = etUrl.getText().toString().trim();
+            String priceStr = etPrice.getText().toString().trim();
+            double manualPrice = 0.0;
+            if (!priceStr.isEmpty()) {
+                try {
+                    manualPrice = Double.parseDouble(priceStr.replace(",", ""));
+                } catch (Exception ignored) {
+                }
+            }
             if (!url.isEmpty()) {
+                if (!com.project.norushcart.location.LocationHelper.hasLocationPermission(MainActivity.this)) {
+                    ActivityCompat.requestPermissions(
+                            MainActivity.this,
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                            PERMISSION_REQUEST_ALL
+                    );
+                }
                 Intent intent = new Intent(MainActivity.this, ShareReceiverActivity.class);
                 intent.putExtra("MANUAL_URL", url);
+                if (manualPrice > 0) {
+                    intent.putExtra("MANUAL_PRICE", manualPrice);
+                }
+                dialog.dismiss();
                 startActivity(intent);
             } else {
                 Toast.makeText(MainActivity.this, "Please enter a valid link", Toast.LENGTH_SHORT).show();
             }
         });
 
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-        builder.show();
+        dialog.show();
     }
 
     // CooldownAdapter callback
@@ -436,25 +510,37 @@ public class MainActivity extends AppCompatActivity implements CooldownAdapter.O
         });
     }
 
-    private void checkNotificationPermission() {
+    private void checkAppPermissions() {
+        List<String> neededPermissions = new ArrayList<>();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
                     != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(
-                        this,
-                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
-                        PERMISSION_REQUEST_NOTIFICATIONS
-                );
+                neededPermissions.add(Manifest.permission.POST_NOTIFICATIONS);
             }
+        }
+        if (!com.project.norushcart.location.LocationHelper.hasLocationPermission(this)) {
+            neededPermissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+            neededPermissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+        }
+
+        if (!neededPermissions.isEmpty()) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    neededPermissions.toArray(new String[0]),
+                    PERMISSION_REQUEST_ALL
+            );
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSION_REQUEST_NOTIFICATIONS) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Notification permission granted!", Toast.LENGTH_SHORT).show();
+        if (requestCode == PERMISSION_REQUEST_ALL) {
+            if (com.project.norushcart.location.LocationHelper.hasLocationPermission(this)) {
+                com.project.norushcart.location.LocationHelper.setLocationTrackingEnabled(this, true);
+                if (impulseMapFragment != null) {
+                    impulseMapFragment.reloadMapData();
+                }
             }
         }
     }

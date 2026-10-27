@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootMainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/canvas_root">
@@ -15,6 +16,17 @@
         app:title="@string/app_name"
         app:titleTextAppearance="@style/TextAppearance.NoRushCart.TitleLg"
         app:titleTextColor="@color/text_primary" />
+
+    <!-- Bottom Navigation Bar -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        style="@style/Widget.NoRushCart.BottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/bottom_nav_height"
+        android:layout_alignParentBottom="true"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/bottom_nav_menu" />
 
     <!-- Container for Tab 1: Cooling Down -->
     <FrameLayout
@@ -43,7 +55,7 @@
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:paddingTop="8dp"
-            android:paddingBottom="16dp" />
+            android:paddingBottom="24dp" />
 
     </FrameLayout>
 
@@ -75,7 +87,7 @@
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:paddingTop="8dp"
-            android:paddingBottom="16dp" />
+            android:paddingBottom="24dp" />
 
     </FrameLayout>
 
@@ -197,17 +209,8 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:clipToPadding="false"
-            android:paddingBottom="16dp" />
+            android:paddingBottom="24dp" />
 
     </LinearLayout>
-
-    <!-- Bottom Navigation Bar -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigation"
-        style="@style/Widget.NoRushCart.BottomNav"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_nav_height"
-        android:layout_alignParentBottom="true"
-        app:menu="@menu/bottom_nav_menu" />
 
 </RelativeLayout>

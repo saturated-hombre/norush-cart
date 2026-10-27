@@ -63,7 +63,10 @@ public class NearbyStoresHelper {
      */
     public static boolean hasValidApiKey() {
         String key = BuildConfig.MAPS_API_KEY;
-        return key != null && !key.trim().isEmpty() && !key.contains("YOUR_") && !key.equalsIgnoreCase("YOUR_MAPS_API_KEY_HERE");
+        return key != null && !key.trim().isEmpty()
+                && !key.toUpperCase().contains("YOUR_")
+                && !key.equalsIgnoreCase("YOUR_MAPS_API_KEY_HERE")
+                && !key.toLowerCase().contains("youractualkeyhere");
     }
 
     /**

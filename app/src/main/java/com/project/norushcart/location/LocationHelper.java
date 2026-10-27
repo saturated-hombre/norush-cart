@@ -76,8 +76,11 @@ public class LocationHelper {
         };
         mainHandler.postDelayed(timeoutRunnable, TIMEOUT_MS);
 
+        boolean hasFine = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        int priority = hasFine ? Priority.PRIORITY_HIGH_ACCURACY : Priority.PRIORITY_BALANCED_POWER_ACCURACY;
+
         try {
-            client.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cts.getToken())
+            client.getCurrentLocation(priority, cts.getToken())
                     .addOnSuccessListener(location -> {
                         mainHandler.removeCallbacks(timeoutRunnable);
                         synchronized (completed) {
@@ -104,7 +107,7 @@ public class LocationHelper {
                 if (completed[0]) return;
                 completed[0] = true;
             }
-            mainHandler.post(() -> callback.onLocationResult(null, null, null));
+            fallbackToLastLocation(client, mainHandler, callback);
         }
     }
 
@@ -159,8 +162,11 @@ public class LocationHelper {
         };
         mainHandler.postDelayed(timeoutRunnable, TIMEOUT_MS);
 
+        boolean hasFine = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        int priority = hasFine ? Priority.PRIORITY_HIGH_ACCURACY : Priority.PRIORITY_BALANCED_POWER_ACCURACY;
+
         try {
-            client.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cts.getToken())
+            client.getCurrentLocation(priority, cts.getToken())
                     .addOnSuccessListener(loc -> {
                         synchronized (completed) {
                             if (completed[0]) return;
@@ -183,7 +189,7 @@ public class LocationHelper {
                     });
         } catch (SecurityException e) {
             mainHandler.removeCallbacks(timeoutRunnable);
-            mainHandler.post(() -> callback.onLocation(null, null));
+            timeoutRunnable.run();
         }
     }
 }

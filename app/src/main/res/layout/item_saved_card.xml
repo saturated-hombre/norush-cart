@@ -28,13 +28,44 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tvSavedPlatform"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Amazon"
-                android:textAppearance="@style/TextAppearance.NoRushCart.LabelSm"
-                android:textColor="@color/text_tertiary" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvSavedPlatform"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Amazon"
+                    android:textAppearance="@style/TextAppearance.NoRushCart.LabelSm"
+                    android:textColor="@color/text_tertiary" />
+
+                <!-- Location Chip if available -->
+                <LinearLayout
+                    android:id="@+id/layoutSavedLocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="22dp"
+                    android:background="@drawable/bg_chip_location"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="8dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/tvSavedLocation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:maxWidth="130dp"
+                        android:text="📍 Trigger Spot"
+                        android:textAppearance="@style/TextAppearance.NoRushCart.LabelSm"
+                        android:textColor="@color/secondary_light" />
+                </LinearLayout>
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/tvSavedTitle"
@@ -46,45 +77,13 @@
                 android:textAppearance="@style/TextAppearance.NoRushCart.TitleMd"
                 android:textColor="@color/text_primary" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tvSavedPrice"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/tvSavedPrice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.NoRushCart.TitleMd"
-                    android:textColor="@color/status_unlocked" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:layout_weight="1" />
-
-                <!-- Location Chip if available -->
-                <LinearLayout
-                    android:id="@+id/layoutSavedLocation"
-                    android:layout_width="wrap_content"
-                    android:layout_height="24dp"
-                    android:background="@drawable/bg_chip_location"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="8dp"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:id="@+id/tvSavedLocation"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="📍 Trigger Spot"
-                        android:textAppearance="@style/TextAppearance.NoRushCart.LabelSm"
-                        android:textColor="@color/secondary_light" />
-                </LinearLayout>
-
-            </LinearLayout>
+                android:textAppearance="@style/TextAppearance.NoRushCart.TitleMd"
+                android:textColor="@color/status_unlocked" />
 
         </LinearLayout>
 

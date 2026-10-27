@@ -148,15 +148,7 @@ public class PlaceBottomSheetFragment extends BottomSheetDialogFragment {
             holder.tvTitle.setText(it.getTitle());
             holder.tvPriceAndStatus.setText(it.getFormattedPrice() + " • " + it.getStatus());
 
-            if (it.getImageUrl() != null && !it.getImageUrl().isEmpty()) {
-                Glide.with(holder.itemView.getContext())
-                        .load(it.getImageUrl())
-                        .placeholder(R.drawable.bg_privacy_pill)
-                        .error(R.drawable.bg_privacy_pill)
-                        .into(holder.ivThumb);
-            } else {
-                holder.ivThumb.setImageResource(R.drawable.bg_privacy_pill);
-            }
+            GlideHelper.loadProductImage(holder.itemView.getContext(), it.getImageUrl(), holder.ivThumb);
         }
 
         @Override

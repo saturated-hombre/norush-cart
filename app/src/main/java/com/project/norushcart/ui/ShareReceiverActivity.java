@@ -6,14 +6,19 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+
+import android.Manifest;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.miniproject.myapplication.BuildConfig;
@@ -37,6 +42,11 @@ public class ShareReceiverActivity extends AppCompatActivity {
     private TextView tvLockChip;
     private TextView tvLocationChip;
     private View layoutLocationChip;
+    private View layoutPriceEditInline;
+    private View layoutPriceView;
+    private EditText etInlinePrice;
+    private MaterialButton btnSaveInlinePrice;
+    private ImageView btnEditPriceInline;
     private ShapeableImageView ivProductImage;
     private MaterialButton btnDone;
     private ImageView btnCloseSheet;
@@ -48,6 +58,25 @@ public class ShareReceiverActivity extends AppCompatActivity {
 
     private boolean scraperFinished = false;
     private boolean locationFinished = false;
+
+    private final ActivityResultLauncher<String[]> locationPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
+                boolean fineGranted = Boolean.TRUE.equals(result.get(Manifest.permission.ACCESS_FINE_LOCATION));
+                boolean coarseGranted = Boolean.TRUE.equals(result.get(Manifest.permission.ACCESS_COARSE_LOCATION));
+                if (fineGranted || coarseGranted) {
+                    LocationHelper.setLocationTrackingEnabled(this, true);
+                    LocationHelper.fetchCurrentLocation(this, (latitude, longitude, accuracy) -> {
+                        capturedLat = latitude;
+                        capturedLng = longitude;
+                        capturedAcc = accuracy;
+                        locationFinished = true;
+                        checkCompletion();
+                    });
+                } else {
+                    locationFinished = true;
+                    checkCompletion();
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +129,12 @@ public class ShareReceiverActivity extends AppCompatActivity {
         btnDone = findViewById(R.id.btnDone);
         btnCloseSheet = findViewById(R.id.btnCloseSheet);
 
+        layoutPriceEditInline = findViewById(R.id.layoutPriceEditInline);
+        layoutPriceView = findViewById(R.id.layoutPriceView);
+        etInlinePrice = findViewById(R.id.etInlinePrice);
+        btnSaveInlinePrice = findViewById(R.id.btnSaveInlinePrice);
+        btnEditPriceInline = findViewById(R.id.btnEditPriceInline);
+
         btnCloseSheet.setOnClickListener(v -> finish());
         btnDone.setOnClickListener(v -> finish());
     }
@@ -109,14 +144,21 @@ public class ShareReceiverActivity extends AppCompatActivity {
         layoutContent.setVisibility(View.GONE);
         tvLoadingStatus.setText(R.string.share_sheet_scraping);
 
-        // 1. Parallel Location Fetch with 2s timeout
-        LocationHelper.fetchCurrentLocation(this, (latitude, longitude, accuracy) -> {
-            capturedLat = latitude;
-            capturedLng = longitude;
-            capturedAcc = accuracy;
-            locationFinished = true;
-            checkCompletion();
-        });
+        // 1. Parallel Location Fetch with timeout
+        if (!LocationHelper.hasLocationPermission(this) && LocationHelper.isLocationTrackingEnabled(this)) {
+            locationPermissionLauncher.launch(new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            });
+        } else {
+            LocationHelper.fetchCurrentLocation(this, (latitude, longitude, accuracy) -> {
+                capturedLat = latitude;
+                capturedLng = longitude;
+                capturedAcc = accuracy;
+                locationFinished = true;
+                checkCompletion();
+            });
+        }
 
         // 2. Parallel Product Scraper via JSoup
         scraperHelper.scrapeProduct(rawContent, new UrlScraperHelper.ScrapeCallback() {
@@ -152,6 +194,11 @@ public class ShareReceiverActivity extends AppCompatActivity {
             return;
         }
 
+        double manualPrice = getIntent().getDoubleExtra("MANUAL_PRICE", 0.0);
+        if (manualPrice > 0) {
+            parsedItem.setPrice(manualPrice);
+        }
+
         // Attach captured coordinates & accuracy
         parsedItem.setLatitude(capturedLat);
         parsedItem.setLongitude(capturedLng);
@@ -176,13 +223,57 @@ public class ShareReceiverActivity extends AppCompatActivity {
         displayInterceptedProduct(parsedItem);
     }
 
+    private void updatePriceDisplay(ProductItem item) {
+        if (item.getPrice() > 0) {
+            tvProductPrice.setText(item.getFormattedPrice());
+            tvProductPrice.setTextColor(getColor(R.color.primary_light));
+        } else {
+            tvProductPrice.setText("₹ Set Price");
+            tvProductPrice.setTextColor(getColor(R.color.amber_solar));
+        }
+    }
+
     private void displayInterceptedProduct(ProductItem item) {
         layoutLoading.setVisibility(View.GONE);
         layoutContent.setVisibility(View.VISIBLE);
 
         tvRetailer.setText(item.getSourcePlatform() != null ? item.getSourcePlatform() : "Online Store");
         tvProductTitle.setText(item.getTitle());
-        tvProductPrice.setText(item.getFormattedPrice());
+        updatePriceDisplay(item);
+
+        View.OnClickListener togglePriceEdit = v -> {
+            if (layoutPriceEditInline.getVisibility() == View.VISIBLE) {
+                layoutPriceEditInline.setVisibility(View.GONE);
+            } else {
+                layoutPriceEditInline.setVisibility(View.VISIBLE);
+                if (item.getPrice() > 0) {
+                    etInlinePrice.setText(String.valueOf((long) item.getPrice()));
+                    etInlinePrice.setSelection(etInlinePrice.getText().length());
+                } else {
+                    etInlinePrice.setText("");
+                }
+                etInlinePrice.requestFocus();
+            }
+        };
+
+        tvProductPrice.setOnClickListener(togglePriceEdit);
+        btnEditPriceInline.setOnClickListener(togglePriceEdit);
+
+        btnSaveInlinePrice.setOnClickListener(v -> {
+            String val = etInlinePrice.getText().toString().trim();
+            if (!val.isEmpty()) {
+                try {
+                    double newPrice = Double.parseDouble(val.replace(",", ""));
+                    if (newPrice > 0) {
+                        item.setPrice(newPrice);
+                        DatabaseHelper.getInstance(this).updateItemPrice(item.getId(), newPrice);
+                        updatePriceDisplay(item);
+                        layoutPriceEditInline.setVisibility(View.GONE);
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+        });
 
         if (BuildConfig.COOLDOWN_MINUTES_DEBUG <= 2) {
             tvLockChip.setText("⚡ Locked for 2 minutes (Debug)");
@@ -201,21 +292,14 @@ public class ShareReceiverActivity extends AppCompatActivity {
             layoutLocationChip.setVisibility(View.GONE);
         }
 
-        if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
-            com.bumptech.glide.load.model.GlideUrl glideUrl = new com.bumptech.glide.load.model.GlideUrl(
-                    item.getImageUrl(),
-                    new com.bumptech.glide.load.model.LazyHeaders.Builder()
-                            .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
-                            .build()
-            );
+        GlideHelper.loadProductImage(this, item.getImageUrl(), ivProductImage);
 
-            Glide.with(this)
-                    .load(glideUrl)
-                    .placeholder(R.drawable.ic_launcher_background)
-                    .error(R.drawable.ic_launcher_background)
-                    .into(ivProductImage);
+        // If price could not be automatically determined, show inline editor cleanly inside the sheet
+        if (item.getPrice() <= 0) {
+            layoutPriceEditInline.setVisibility(View.VISIBLE);
+            etInlinePrice.requestFocus();
         } else {
-            ivProductImage.setImageResource(R.drawable.ic_launcher_background);
+            layoutPriceEditInline.setVisibility(View.GONE);
         }
     }
 

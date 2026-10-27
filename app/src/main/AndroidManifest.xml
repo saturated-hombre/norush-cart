@@ -7,6 +7,18 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+    <queries>
+        <package android:name="com.google.android.apps.maps" />
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="geo" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -37,7 +49,8 @@
             android:name="com.project.norushcart.ui.ShareReceiverActivity"
             android:exported="true"
             android:label="Add to NoRush Cart"
-            android:theme="@style/Theme.NoRushCart.Dialog">
+            android:theme="@style/Theme.NoRushCart.Dialog"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -55,10 +68,6 @@
             android:exported="false"
             android:label="Settings" />
 
-        <activity
-            android:name=".ui.WebViewActivity"
-            android:exported="false"
-            android:label="Merchant Store" />
 
         <activity
             android:name="com.project.norushcart.ui.CheckoutWebViewActivity"

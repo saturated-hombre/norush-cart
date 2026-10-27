@@ -196,6 +196,9 @@ public class ProductItem {
     }
 
     public String getFormattedPrice() {
+        if (this.price <= 0.0) {
+            return "Set Price ✏️";
+        }
         NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("en", "IN"));
         return format.format(this.price);
     }

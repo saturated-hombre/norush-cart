@@ -34,10 +34,13 @@ public class OnboardingActivity extends AppCompatActivity {
         MaterialButton btnSkip = findViewById(R.id.btnSkipOnboarding);
 
         btnEnable.setOnClickListener(v -> {
-            locationPermissionLauncher.launch(new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-            });
+            java.util.List<String> perms = new java.util.ArrayList<>();
+            perms.add(Manifest.permission.ACCESS_FINE_LOCATION);
+            perms.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                perms.add(Manifest.permission.POST_NOTIFICATIONS);
+            }
+            locationPermissionLauncher.launch(perms.toArray(new String[0]));
         });
 
         btnSkip.setOnClickListener(v -> {

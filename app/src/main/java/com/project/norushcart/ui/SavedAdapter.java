@@ -72,15 +72,7 @@ public class SavedAdapter extends RecyclerView.Adapter<SavedAdapter.ViewHolder> 
             tvSavedPrice.setText("+ " + item.getFormattedPrice() + " saved");
             tvSavedPlatform.setText(item.getSourcePlatform() != null ? item.getSourcePlatform() : "Online Store");
 
-            if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
-                Glide.with(context)
-                        .load(item.getImageUrl())
-                        .placeholder(R.drawable.bg_privacy_pill)
-                        .error(R.drawable.bg_privacy_pill)
-                        .into(ivSavedImage);
-            } else {
-                ivSavedImage.setImageResource(R.drawable.bg_privacy_pill);
-            }
+            GlideHelper.loadProductImage(context, item.getImageUrl(), ivSavedImage);
 
             if (item.hasLocation()) {
                 layoutSavedLocation.setVisibility(View.VISIBLE);

@@ -39,6 +39,10 @@ public class CooldownAdapter extends RecyclerView.Adapter<CooldownAdapter.ViewHo
         notifyDataSetChanged();
     }
 
+    public List<ProductItem> getItems() {
+        return items != null ? items : java.util.Collections.emptyList();
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -50,6 +54,16 @@ public class CooldownAdapter extends RecyclerView.Adapter<CooldownAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ProductItem item = items.get(position);
         holder.bind(item);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull List<Object> payloads) {
+        if (!payloads.isEmpty()) {
+            ProductItem item = items.get(position);
+            holder.updateCountdown(item);
+        } else {
+            super.onBindViewHolder(holder, position, payloads);
+        }
     }
 
     @Override
@@ -80,22 +94,23 @@ public class CooldownAdapter extends RecyclerView.Adapter<CooldownAdapter.ViewHo
             btnDebugFastForward = itemView.findViewById(R.id.btnDebugFastForward);
         }
 
+        public void updateCountdown(ProductItem item) {
+            tvCountdownText.setText("⏳ " + item.getRemainingTimeFormatted());
+        }
+
         public void bind(ProductItem item) {
             tvProductTitle.setText(item.getTitle());
             tvProductPrice.setText(item.getFormattedPrice());
+            tvProductPrice.setOnClickListener(v -> {
+                PriceDialogHelper.showEditPriceDialog(context, item, () -> {
+                    tvProductPrice.setText(item.getFormattedPrice());
+                });
+            });
             tvPlatformBadge.setText(item.getSourcePlatform() != null ? item.getSourcePlatform() : "Online Store");
 
-            if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
-                Glide.with(context)
-                        .load(item.getImageUrl())
-                        .placeholder(R.drawable.bg_privacy_pill)
-                        .error(R.drawable.bg_privacy_pill)
-                        .into(ivProductImage);
-            } else {
-                ivProductImage.setImageResource(R.drawable.bg_privacy_pill);
-            }
+            GlideHelper.loadProductImage(context, item.getImageUrl(), ivProductImage);
 
-            tvCountdownText.setText("⏳ " + item.getRemainingTimeFormatted());
+            updateCountdown(item);
 
             if (item.hasLocation()) {
                 layoutLocationChip.setVisibility(View.VISIBLE);
