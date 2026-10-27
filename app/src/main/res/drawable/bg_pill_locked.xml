@@ -4,6 +4,6 @@
     <solid android:color="@color/status_locked_container" />
     <stroke
         android:width="1dp"
-        android:color="#4DFBBF24" />
+        android:color="#4DE5A855" />
     <corners android:radius="999dp" />
 </shape>

@@ -110,7 +110,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             // Configure state views based on item status
             if (item.isLocked()) {
                 tvStatusBadge.setText("LOCKED (48H QUEUE)");
-                tvStatusBadge.setTextColor(Color.parseColor("#D93025"));
+                tvStatusBadge.setTextColor(Color.parseColor("#E5A855"));
 
                 tvCooldownTime.setVisibility(View.VISIBLE);
                 tvCooldownTime.setText("⏳ " + item.getRemainingTimeFormatted());
@@ -125,12 +125,12 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
             } else if (ProductItem.STATUS_UNLOCKED.equalsIgnoreCase(item.getStatus()) || !item.isLocked() && ProductItem.STATUS_LOCKED.equalsIgnoreCase(item.getStatus())) {
                 tvStatusBadge.setText("READY FOR REVIEW");
-                tvStatusBadge.setTextColor(Color.parseColor("#188038"));
+                tvStatusBadge.setTextColor(Color.parseColor("#4FB8A3"));
 
                 tvCooldownTime.setVisibility(View.VISIBLE);
                 tvCooldownTime.setText("✅ 48h Cooldown Expired! Make your decision.");
-                tvCooldownTime.setBackgroundColor(Color.parseColor("#E6F4EA"));
-                tvCooldownTime.setTextColor(Color.parseColor("#137333"));
+                tvCooldownTime.setBackgroundColor(Color.parseColor("#1B3B34"));
+                tvCooldownTime.setTextColor(Color.parseColor("#A3E7D8"));
 
                 btnDebugFastForward.setVisibility(View.GONE);
                 btnDiscard.setVisibility(View.VISIBLE);
@@ -146,12 +146,12 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
             } else if (ProductItem.STATUS_DISCARDED.equalsIgnoreCase(item.getStatus())) {
                 tvStatusBadge.setText("DISCARDED (SAVED)");
-                tvStatusBadge.setTextColor(Color.parseColor("#1A73E8"));
+                tvStatusBadge.setTextColor(Color.parseColor("#70A5D8"));
 
                 tvCooldownTime.setVisibility(View.VISIBLE);
                 tvCooldownTime.setText("🎉 Saved " + item.getFormattedPrice() + " by avoiding impulse purchase!");
-                tvCooldownTime.setBackgroundColor(Color.parseColor("#E8F0FE"));
-                tvCooldownTime.setTextColor(Color.parseColor("#1A73E8"));
+                tvCooldownTime.setBackgroundColor(Color.parseColor("#182C48"));
+                tvCooldownTime.setTextColor(Color.parseColor("#C5DEFC"));
 
                 btnDebugFastForward.setVisibility(View.GONE);
                 btnDiscard.setVisibility(View.GONE);

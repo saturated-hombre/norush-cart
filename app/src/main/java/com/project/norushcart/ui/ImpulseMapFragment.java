@@ -414,11 +414,11 @@ public class ImpulseMapFragment extends Fragment implements OnMapReadyCallback {
         protected void onBeforeClusterItemRendered(@NonNull ImpulseClusterItem item, @NonNull MarkerOptions markerOptions) {
             float hue;
             if (item.isLateNight()) {
-                hue = BitmapDescriptorFactory.HUE_ROSE; // Fuchsia/Pink for late-night triggers
+                hue = BitmapDescriptorFactory.HUE_VIOLET; // Twilight violet for late-night triggers
             } else if (ProductItem.STATUS_UNLOCKED.equals(item.getItem().getStatus())) {
-                hue = BitmapDescriptorFactory.HUE_GREEN; // Mint green for ready items
+                hue = BitmapDescriptorFactory.HUE_GREEN; // Frosted pine green for ready items
             } else {
-                hue = BitmapDescriptorFactory.HUE_CYAN; // Cyan for daytime triggers
+                hue = BitmapDescriptorFactory.HUE_AZURE; // Glacier azure for daytime triggers
             }
 
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(hue))

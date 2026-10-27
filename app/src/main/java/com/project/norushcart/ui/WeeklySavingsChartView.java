@@ -52,11 +52,11 @@ public class WeeklySavingsChartView extends View {
     }
 
     private void init() {
-        textPaint.setColor(0xFFF2F0FA);
+        textPaint.setColor(0xFFF0F4F8);
         textPaint.setTextSize(spToPx(10));
         textPaint.setTextAlign(Paint.Align.CENTER);
 
-        labelPaint.setColor(0xFFA9A3C9);
+        labelPaint.setColor(0xFF94A3B8);
         labelPaint.setTextSize(spToPx(11));
         labelPaint.setTextAlign(Paint.Align.CENTER);
 
@@ -117,12 +117,12 @@ public class WeeklySavingsChartView extends View {
             if (item.isCurrent) {
                 LinearGradient gradient = new LinearGradient(
                         left, top, right, bottom,
-                        0xFF00F0FF, 0xFF3B82F6, Shader.TileMode.CLAMP
+                        0xFF4FB8A3, 0xFF5B8BF7, Shader.TileMode.CLAMP
                 );
                 barPaint.setShader(gradient);
             } else {
                 barPaint.setShader(null);
-                barPaint.setColor(0xFF322575);
+                barPaint.setColor(0xFF222933);
             }
 
             canvas.drawRoundRect(barRect, cornerRadius, cornerRadius, barPaint);
@@ -137,11 +137,11 @@ public class WeeklySavingsChartView extends View {
                 valStr = "—";
             }
 
-            textPaint.setColor(item.isCurrent ? 0xFF00F0FF : 0xFF7F77A8);
+            textPaint.setColor(item.isCurrent ? 0xFF4FB8A3 : 0xFF64748B);
             canvas.drawText(valStr, cx, top - dpToPx(6), textPaint);
 
             // Label text below bar
-            labelPaint.setColor(item.isCurrent ? 0xFF00F0FF : 0xFFA9A3C9);
+            labelPaint.setColor(item.isCurrent ? 0xFF4FB8A3 : 0xFF94A3B8);
             labelPaint.setTypeface(item.isCurrent ? android.graphics.Typeface.DEFAULT_BOLD : android.graphics.Typeface.DEFAULT);
             canvas.drawText(item.label, cx, bottom + dpToPx(16), labelPaint);
 
